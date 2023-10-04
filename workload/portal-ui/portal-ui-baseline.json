@@ -1457,7 +1457,7 @@
                                     "type": "Microsoft.Common.InfoBox",
                                     "visible": "[steps('network').hubVirtualNetworkFirewall.deployAvdFirewall]",
                                     "options": {
-                                        "text": "Azure Firewall, Azure Firewall Policy, and Azure Firewall subnet will be created in the existing vNet hub. Additionally, UDR will be added to AVD subnet to route all traffic through the Azure Firewall for protection of AVD deployments.",
+                                        "text": "Azure Firewall, Azure Firewall Policy, and Azure Firewall subnet will be created in the existing vNet hub for protection of AVD deployments.",
                                         "uri": "https://learn.microsoft.com/azure/firewall/protect-azure-virtual-desktop",
                                         "style": "info"
                                     }

@@ -725,26 +725,6 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
                             '443'
                         ]
                     }
-                    {
-                        ruleType: 'NetworkRule'
-                        name: 'GitHub'
-                        ipProtocols: [
-                            'TCP'
-                        ]
-                        sourceAddresses: [
-                            vnetAvdSubnetAddressPrefix
-                        ]
-                        sourceIpGroups: []
-                        destinationAddresses: []
-                        destinationIpGroups: []
-                        destinationFqdns: [
-                            'github.com'
-                            'raw.githubusercontent.com'
-                        ]
-                        destinationPorts: [
-                            '443'
-                        ]
-                    }
                 ]
             }
             {
@@ -905,30 +885,6 @@ module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/d
     dependsOn: [
         firewallPolicyOptionalRuleCollectionGroup
         hubVirtualNetworkAzureFirewallSubnet
-    ]
-}
-
-// AVD route table for Firewall
-module routeTableAvdforFirewall '../../../../carml/1.3.0/Microsoft.Network/routeTables/deploy.bicep' = if (createVnet && deployAvdFirewall) {
-    scope: resourceGroup('${workloadSubsId}', '${networkObjectsRgName}')
-    name: 'Route-Table-AVD-Fw-${time}'
-    params: {
-        name: avdRouteTableName
-        location: sessionHostLocation
-        tags: tags
-        routes: varCreateAvdStaicRoute ? [
-            {
-                name: 'default'
-                properties: {
-                    addressPrefix: '0.0.0.0/0'
-                    nextHopIpAddress: azureFirewall.outputs.privateIp
-                    nextHopType: 'VirtualAppliance'
-                }
-            }
-        ] : []
-    }
-    dependsOn: [
-        azureFirewall
     ]
 }
 
