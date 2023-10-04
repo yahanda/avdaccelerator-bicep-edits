@@ -161,6 +161,12 @@ param avdVnetPrivateDnsZoneKeyvaultId string = ''
 @sys.description('Does the hub contains a virtual network gateway. (Default: false)')
 param vNetworkGatewayOnHub bool = false
 
+@sys.description('Create Azure Firewall and Azure Firewall Policy. (Default: false)')
+param deployAvdFirewall bool = false
+
+@sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
+param firewallSubnetAddressPrefix string = '10.0.2.0/24'
+
 @sys.description('Deploy Fslogix setup. (Default: true)')
 param createAvdFslogixDeployment bool = true
 
@@ -517,6 +523,13 @@ var varPrivateEndpointNetworksecurityGroupName = avdUseCustomNaming ? privateEnd
 var varAvdRouteTableName = avdUseCustomNaming ? avdRouteTableCustomName : 'route-avd-${varComputeStorageResourcesNamingStandard}-001'
 var varPrivateEndpointRouteTableName = avdUseCustomNaming ? privateEndpointRouteTableCustomName : 'route-pe-${varComputeStorageResourcesNamingStandard}-001'
 var varApplicationSecurityGroupName = avdUseCustomNaming ? avdApplicationSecurityGroupCustomName : 'asg-${varComputeStorageResourcesNamingStandard}-001'
+var varFiwewallName = 'fw-avd-${varHubVnetName}'
+var varFiwewallPolicyName = 'fwpol-avd-${varHubVnetName}'
+var varFiwewallPolicyRuleCollectionGroupName = '${varFiwewallPolicyName}-rcg'
+var varFiwewallPolicyNetworkRuleCollectionName = '${varFiwewallPolicyName}-nw-rule-collection'
+var varFiwewallPolicyOptionalRuleCollectionGroupName = '${varFiwewallPolicyName}-rcg-optional'
+var varFiwewallPolicyOptionalNetworkRuleCollectionName = '${varFiwewallPolicyName}-nw-rule-collection-optional'
+var varFiwewallPolicyOptionalApplicationRuleCollectionName = '${varFiwewallPolicyName}-app-rule-collection-optional'
 var varWorkSpaceName = avdUseCustomNaming ? avdWorkSpaceCustomName : 'vdws-${varManagementPlaneNamingStandard}-001'
 var varWorkSpaceFriendlyName = avdUseCustomNaming ? avdWorkSpaceCustomFriendlyName : 'Workspace ${deploymentPrefix} ${deploymentEnvironment} ${avdManagementPlaneLocation} 001'
 var varHostPoolName = avdUseCustomNaming ? avdHostPoolCustomName : 'vdpool-${varManagementPlaneNamingStandard}-001'
@@ -950,6 +963,15 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         dnsServers: varDnsServers
         tags: createResourceTags ? union(varCustomResourceTags, varAvdDefaultTags) : varAvdDefaultTags
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
+        deployAvdFirewall: deployAvdFirewall
+        firewallName: varFiwewallName
+        firewallPolicyName: varFiwewallPolicyName
+        firewallPolicyRuleCollectionGroupName: varFiwewallPolicyRuleCollectionGroupName
+        firewallPolicyNetworkRuleCollectionName: varFiwewallPolicyNetworkRuleCollectionName
+        firewallPolicyOptionalRuleCollectionGroupName: varFiwewallPolicyOptionalRuleCollectionGroupName
+        firewallPolicyOptionalNetworkRuleCollectionName: varFiwewallPolicyOptionalNetworkRuleCollectionName
+        firewallPolicyOptionalApplicationRuleCollectionName: varFiwewallPolicyOptionalApplicationRuleCollectionName
+        firewallSubnetAddressPrefix: firewallSubnetAddressPrefix
     }
     dependsOn: [
         baselineNetworkResourceGroup

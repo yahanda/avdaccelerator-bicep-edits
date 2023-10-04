@@ -222,7 +222,7 @@ module publicIPAddress '../../Microsoft.Network/publicIPAddresses/deploy.bicep' 
     ]
     location: location
     diagnosticStorageAccountId: diagnosticStorageAccountId
-    diagnosticLogsRetentionInDays: diagnosticLogsRetentionInDays
+    //diagnosticLogsRetentionInDays: diagnosticLogsRetentionInDays
     diagnosticWorkspaceId: diagnosticWorkspaceId
     diagnosticEventHubAuthorizationRuleId: diagnosticEventHubAuthorizationRuleId
     diagnosticEventHubName: diagnosticEventHubName

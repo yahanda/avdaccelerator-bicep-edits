@@ -57,6 +57,33 @@ param remoteVnetPeeringName string
 @sys.description('Create virtual network peering to hub.')
 param createVnetPeering bool
 
+@sys.description('Create firewall and firewall policy to hub virtual network.')
+param deployAvdFirewall bool
+
+@sys.description('Firewall name')
+param firewallName string
+
+@sys.description('Firewall policy name')
+param firewallPolicyName string
+
+@sys.description('Firewall policy rule collection group name')
+param firewallPolicyRuleCollectionGroupName string
+
+@sys.description('Firewall policy rule collection group name (optional)')
+param firewallPolicyOptionalRuleCollectionGroupName string
+
+@sys.description('Firewall policy network rule collection name')
+param firewallPolicyNetworkRuleCollectionName string
+
+@sys.description('Firewall policy network rule collection name (optional)')
+param firewallPolicyOptionalNetworkRuleCollectionName string
+
+@sys.description('Firewall policy application rule collection name (optional)')
+param firewallPolicyOptionalApplicationRuleCollectionName string
+
+@sys.description('Firewall subnet adderss prefix')
+param firewallSubnetAddressPrefix string
+
 @sys.description('Optional. AVD Accelerator will deploy with private endpoints by default.')
 param deployPrivateEndpointSubnet bool
 
@@ -117,6 +144,10 @@ var varExistingAvdVnetResourceId = !createVnet ? '/subscriptions/${varExistingAv
 //var varExistingPeVnetSubRgName = split(existingPeSubnetResourceId, '/')[4]
 //var varExistingAPeVnetName = split(existingPeSubnetResourceId, '/')[8]
 //var varExistingPeVnetResourceId = '/subscriptions/${varExistingPeVnetSubId}/resourceGroups/${varExistingPeVnetSubRgName}/providers/Microsoft.Network/virtualNetworks/${varExistingAPeVnetName}'
+var varExistingHubSubId = split(existingHubVnetResourceId, '/')[2]
+var varExistingHubSubRgName = split(existingHubVnetResourceId, '/')[4]
+var varExistingHubVnetName = split(existingHubVnetResourceId, '/')[8]
+
 // =========== //
 // Deployments //
 // =========== //
@@ -408,6 +439,479 @@ module privateDnsZoneKeyVaultGov '.bicep/privateDnsZones.bicep' = if (createPriv
         tags: tags
     }
 }
+
+// Firewall policy
+module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/deploy.bicep' = if (deployAvdFirewall) {
+    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    name: 'Fw-Policy-${time}'
+    params: {
+        name: firewallPolicyName
+        enableProxy: true
+    }
+}
+
+// Firewall policy rule collection group
+module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployAvdFirewall) {
+    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    name: 'Fw-Policy-Rcg-${time}'
+    params: {
+        name: firewallPolicyRuleCollectionGroupName
+        firewallPolicyName: firewallPolicyName
+        priority: 100
+        ruleCollections: [
+            {
+                name: firewallPolicyNetworkRuleCollectionName
+                priority: 100
+                ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
+                action: {
+                    type: 'Allow'
+                }
+                rules: [
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Auth to Msft Online Services'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'login.microsoftonline.com'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Service Traffic'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: [
+                            'WindowsVirtualDesktop'
+                            'AzureFrontDoor.Frontend'
+                            'AzureMonitor'
+                        ]
+                        destinationIpGroups: []
+                        destinationFqdns: []
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'DNS Traffic'
+                        ipProtocols: [
+                            'TCP'
+                            'UDP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: [
+                            '*'
+                        ]
+                        destinationIpGroups: []
+                        destinationFqdns: []
+                        destinationPorts: [
+                            '53'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Azure Windows Activation'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: [
+                            '20.118.99.224'
+                            '40.83.235.53'
+                        ]
+                        destinationIpGroups: []
+                        destinationFqdns: []
+                        destinationPorts: [
+                            '1688'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Windows Activation'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: [
+                            '23.102.135.246'
+                        ]
+                        destinationIpGroups: []
+                        destinationFqdns: []
+                        destinationPorts: [
+                            '1688'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Agent and SxS Stack Updates'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'mrsglobalsteus2prod.blob.core.windows.net'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Azure Portal Support'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'wvdportalstorageblob.blob.core.windows.net'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Cert CRL OneOCSP'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'oneocsp.microsoft.com'
+                        ]
+                        destinationPorts: [
+                            '80'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'Cert CRL MicrosoftDotCom'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'www.microsoft.com'
+                        ]
+                        destinationPorts: [
+                            '80'
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+    dependsOn: [
+        firewallPolicy
+    ]
+}
+
+// Firewall policy optional rule collection group
+module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployAvdFirewall) {
+    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    name: 'Fw-Policy-Rcg-Optional-${time}'
+    params: {
+        name: firewallPolicyOptionalRuleCollectionGroupName
+        firewallPolicyName: firewallPolicyName
+        priority: 200
+        ruleCollections: [
+            {
+                name: firewallPolicyOptionalNetworkRuleCollectionName
+                priority: 100
+                ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
+                action: {
+                    type: 'Allow'
+                }
+                rules: [
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'NTP'
+                        ipProtocols: [
+                            'UDP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'time.windows.com'
+                        ]
+                        destinationPorts: [
+                            '123'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'SigninToMSOL365'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'login.windows.net'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'DetectOSconnectedToInternet'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'www.msftconnecttest.com'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                ]
+            }
+            {
+                name: firewallPolicyOptionalApplicationRuleCollectionName
+                priority: 200
+                ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
+                action: {
+                    type: 'Allow'
+                }
+                rules: [
+                    {
+                        ruleType: 'ApplicationRule'
+                        name: 'UpdatesforOneDrive'
+                        protocols: [
+                            {
+                                protocolType: 'Https'
+                                port: 443
+                            }
+                        ]
+                        fqdnTags: [
+                            'WindowsUpdate'
+                            'WindowsDiagnostic'
+                            'MicrosoftActiveProtectionService'
+                        ]
+                        webCategories: []
+                        targetFqdns: []
+                        targetUrls: []
+                        terminateTLS: false
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        destinationAddresses: []
+                        sourceIpGroups: []
+                        httpHeadersToInsert: []
+                    }
+                    {
+                        ruleType: 'ApplicationRule'
+                        name: 'TelemetryService'
+                        protocols: [
+                            {
+                                protocolType: 'Https'
+                                port: 443
+                            }
+                        ]
+                        fqdnTags: []
+                        webCategories: []
+                        targetFqdns: [
+                            '*.events.data.microsoft.com'
+                        ]
+                        targetUrls: []
+                        terminateTLS: false
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        destinationAddresses: []
+                        sourceIpGroups: []
+                        httpHeadersToInsert: []
+                    }
+                    {
+                        ruleType: 'ApplicationRule'
+                        name: 'Windows Update'
+                        protocols: [
+                            {
+                                protocolType: 'Https'
+                                port: 443
+                            }
+                        ]
+                        fqdnTags: []
+                        webCategories: []
+                        targetFqdns: [
+                            '*.sfx.ms'
+                        ]
+                        targetUrls: []
+                        terminateTLS: false
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        destinationAddresses: []
+                        sourceIpGroups: []
+                        httpHeadersToInsert: []
+                    }
+                    {
+                        ruleType: 'ApplicationRule'
+                        name: 'DigitcertCRL'
+                        protocols: [
+                            {
+                                protocolType: 'Https'
+                                port: 443
+                            }
+                        ]
+                        fqdnTags: []
+                        webCategories: []
+                        targetFqdns: [
+                            '*.digicert.com'
+                        ]
+                        targetUrls: []
+                        terminateTLS: false
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        destinationAddresses: []
+                        sourceIpGroups: []
+                        httpHeadersToInsert: []
+                    }
+                    {
+                        ruleType: 'ApplicationRule'
+                        name: 'AzureDNSResolution'
+                        protocols: [
+                            {
+                                protocolType: 'Https'
+                                port: 443
+                            }
+                        ]
+                        fqdnTags: []
+                        webCategories: []
+                        targetFqdns: [
+                            '*.azure-dns.com'
+                            '*.azure-dns.net'
+                        ]
+                        targetUrls: []
+                        terminateTLS: false
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        destinationAddresses: []
+                        sourceIpGroups: []
+                        httpHeadersToInsert: []
+                    }
+                ]
+            }
+        ]
+    }
+    dependsOn: [
+        firewallPolicyRuleCollectionGroup
+    ]
+}
+
+// Azure Firewall subnet
+module hubVirtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployAvdFirewall) {
+    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    name: 'Fw-Subnet-${time}'
+    params: {
+        addressPrefix: firewallSubnetAddressPrefix
+        name: 'AzureFirewallSubnet'
+        virtualNetworkName: varExistingHubVnetName
+    }
+}
+
+// Azure Firewall
+module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/deploy.bicep' = if (deployAvdFirewall) {
+    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    name: 'Fw-${time}'
+    params: {
+        name: firewallName
+        vNetId: existingHubVnetResourceId
+        firewallPolicyId: firewallPolicy.outputs.resourceId
+    }
+    dependsOn: [
+        firewallPolicyOptionalRuleCollectionGroup
+        hubVirtualNetworkAzureFirewallSubnet
+    ]
+}
+
+// AVD route table for Firewall
+module routeTableAvdforFirewall '../../../../carml/1.3.0/Microsoft.Network/routeTables/deploy.bicep' = if (createVnet && deployAvdFirewall) {
+    scope: resourceGroup('${workloadSubsId}', '${networkObjectsRgName}')
+    name: 'Route-Table-AVD-Fw-${time}'
+    params: {
+        name: avdRouteTableName
+        location: sessionHostLocation
+        tags: tags
+        routes: varCreateAvdStaicRoute ? [
+            {
+                name: 'default'
+                properties: {
+                    addressPrefix: '0.0.0.0/0'
+                    nextHopIpAddress: azureFirewall.outputs.privateIp
+                    nextHopType: 'VirtualAppliance'
+                }
+            }
+        ] : []
+    }
+    dependsOn: [
+        azureFirewall
+    ]
+}
+
 // =========== //
 // Outputs //
 // =========== //
