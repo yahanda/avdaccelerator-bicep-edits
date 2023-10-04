@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.21.1.54444",
-      "templateHash": "2710012389240087448"
+      "templateHash": "15466667802386589012"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -8399,7 +8399,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.21.1.54444",
-              "templateHash": "744206307789280632"
+              "templateHash": "11738074428347052620"
             }
           },
           "parameters": {
@@ -13753,6 +13753,26 @@
                             "destinationIpGroups": [],
                             "destinationFqdns": [
                               "www.msftconnecttest.com"
+                            ],
+                            "destinationPorts": [
+                              "443"
+                            ]
+                          },
+                          {
+                            "ruleType": "NetworkRule",
+                            "name": "GitHub",
+                            "ipProtocols": [
+                              "TCP"
+                            ],
+                            "sourceAddresses": [
+                              "[parameters('vnetAvdSubnetAddressPrefix')]"
+                            ],
+                            "sourceIpGroups": [],
+                            "destinationAddresses": [],
+                            "destinationIpGroups": [],
+                            "destinationFqdns": [
+                              "github.com",
+                              "raw.githubusercontent.com"
                             ],
                             "destinationPorts": [
                               "443"
