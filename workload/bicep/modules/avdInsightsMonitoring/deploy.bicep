@@ -4,7 +4,7 @@ targetScope = 'subscription'
 // Parameters //
 // ========== //
 @sys.description('Location where to deploy AVD management plane.')
-param managementPlaneLocation string
+param location string
 
 @sys.description('AVD workload subscription ID, multiple subscriptions scenario.')
 param subscriptionId string
@@ -55,7 +55,7 @@ module baselineMonitoringResourceGroup '../../../../carml/1.3.0/Microsoft.Resour
   name: 'Monitoing-RG-${time}'
   params: {
       name: monitoringRgName
-      location: managementPlaneLocation
+      location: location
       enableDefaultTelemetry: false
       tags: tags
   }
@@ -66,7 +66,7 @@ module alaWorkspace '../../../../carml/1.3.0/Microsoft.OperationalInsights/works
   scope: resourceGroup('${subscriptionId}', '${monitoringRgName}')
   name: 'LA-Workspace-${time}'
   params: {
-    location: managementPlaneLocation
+    location: location
     name: alaWorkspaceName
     dataRetention: alaWorkspaceDataRetention
     useResourcePermissions: true
@@ -77,37 +77,13 @@ module alaWorkspace '../../../../carml/1.3.0/Microsoft.OperationalInsights/works
   ]
 }
 
-// Introduce Wait after log analitics workspace creation.
-module alaWorkspaceWait '../../../../carml/1.3.0/Microsoft.Resources/deploymentScripts/deploy.bicep' = if (deployAlaWorkspace) {
-  scope: resourceGroup('${subscriptionId}', '${monitoringRgName}')
-  name: 'LA-Workspace-Wait-${time}'
-  params: {
-      name: 'LA-Workspace-Wait-${time}'
-      location: managementPlaneLocation
-      azPowerShellVersion: '8.3.0'
-      cleanupPreference: 'Always'
-      timeout: 'PT10M'
-      retentionInterval: 'PT1H'
-      scriptContent: '''
-      Write-Host "Start"
-      Get-Date
-      Start-Sleep -Seconds 120
-      Write-Host "Stop"
-      Get-Date
-      '''
-  }
-  dependsOn: [
-    alaWorkspace
-  ]
-}
-
 // Policy definitions.
 module deployDiagnosticsAzurePolicyForAvd './.bicep/azurePolicyMonitoring.bicep' = if (deployCustomPolicyMonitoring) {
   scope: subscription('${subscriptionId}')
   name: 'Custom-Policy-Monitoring-${time}'
   params: {
     alaWorkspaceId: deployAlaWorkspace ? alaWorkspace.outputs.resourceId : alaWorkspaceId
-    location: managementPlaneLocation
+    location: location
     subscriptionId: subscriptionId
     computeObjectsRgName: computeObjectsRgName
     serviceObjectsRgName: serviceObjectsRgName
@@ -115,7 +91,7 @@ module deployDiagnosticsAzurePolicyForAvd './.bicep/azurePolicyMonitoring.bicep'
     networkObjectsRgName: networkObjectsRgName
   }
   dependsOn: [
-    alaWorkspaceWait
+    alaWorkspace
     baselineMonitoringResourceGroup
   ]
 }
@@ -132,7 +108,7 @@ module deployMonitoringEventsPerformanceSettings './.bicep/monitoringEventsPerfo
       tags: tags
   }
   dependsOn: [
-    alaWorkspaceWait
+    alaWorkspace
   ]
 }
 

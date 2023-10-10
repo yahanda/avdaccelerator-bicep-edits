@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.21.1.54444",
-      "templateHash": "13391568498190449035"
+      "version": "0.17.1.54307",
+      "templateHash": "1320913085188889159"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -1271,7 +1271,6 @@
     "varSessionHostNamePrefix": "[if(parameters('avdUseCustomNaming'), parameters('avdSessionHostCustomNamePrefix'), format('vm{0}{1}{2}', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varSessionHostLocationAcronym')))]",
     "varAvsetNamePrefix": "[if(parameters('avdUseCustomNaming'), format('{0}-{1}', parameters('avsetCustomNamePrefix'), variables('varComputeStorageResourcesNamingStandard')), format('avail-{0}', variables('varComputeStorageResourcesNamingStandard')))]",
     "varStorageManagedIdentityName": "[format('id-storage-{0}-001', variables('varComputeStorageResourcesNamingStandard'))]",
-    "varCleanUpManagedIdentityName": "[format('id-cleanup-{0}-001', variables('varComputeStorageResourcesNamingStandard'))]",
     "varFslogixFileShareName": "[if(parameters('avdUseCustomNaming'), parameters('fslogixFileShareCustomName'), format('fslogix-pc-{0}-{1}-{2}-001', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentLowercase'), variables('varSessionHostLocationAcronym')))]",
     "varMsixFileShareName": "[if(parameters('avdUseCustomNaming'), parameters('msixFileShareCustomName'), format('msix-pc-{0}-{1}-{2}-001', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentLowercase'), variables('varSessionHostLocationAcronym')))]",
     "varFslogixStorageName": "[if(parameters('avdUseCustomNaming'), format('{0}fsl{1}{2}{3}', parameters('storageAccountPrefixCustomName'), variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varNamingUniqueStringThreeChar')), format('stfsl{0}{1}{2}', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varNamingUniqueStringThreeChar')))]",
@@ -3353,7 +3352,7 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "managementPlaneLocation": {
+          "location": {
             "value": "[parameters('avdManagementPlaneLocation')]"
           },
           "deployAlaWorkspace": {
@@ -3389,12 +3388,12 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "3182944092420253110"
+              "version": "0.17.1.54307",
+              "templateHash": "3035548163754880904"
             }
           },
           "parameters": {
-            "managementPlaneLocation": {
+            "location": {
               "type": "string",
               "metadata": {
                 "description": "Location where to deploy AVD management plane."
@@ -3498,7 +3497,7 @@
                     "value": "[parameters('monitoringRgName')]"
                   },
                   "location": {
-                    "value": "[parameters('managementPlaneLocation')]"
+                    "value": "[parameters('location')]"
                   },
                   "enableDefaultTelemetry": {
                     "value": false
@@ -4092,7 +4091,7 @@
                 "mode": "Incremental",
                 "parameters": {
                   "location": {
-                    "value": "[parameters('managementPlaneLocation')]"
+                    "value": "[parameters('location')]"
                   },
                   "name": {
                     "value": "[parameters('alaWorkspaceName')]"
@@ -6000,8 +5999,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "8145106657487286483"
+                      "version": "0.17.1.54307",
+                      "templateHash": "6119857452463366145"
                     }
                   },
                   "parameters": {
@@ -6142,14 +6141,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "tags": {
                       "type": "object",
@@ -6285,7 +6284,7 @@
                 "parameters": {
                   "alaWorkspaceId": "[if(parameters('deployAlaWorkspace'), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('monitoringRgName'))), 'Microsoft.Resources/deployments', format('LA-Workspace-{0}', parameters('time'))), '2022-09-01').outputs.resourceId.value), createObject('value', parameters('alaWorkspaceId')))]",
                   "location": {
-                    "value": "[parameters('managementPlaneLocation')]"
+                    "value": "[parameters('location')]"
                   },
                   "subscriptionId": {
                     "value": "[parameters('subscriptionId')]"
@@ -7316,7 +7315,6 @@
               },
               "dependsOn": [
                 "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('monitoringRgName'))), 'Microsoft.Resources/deployments', format('LA-Workspace-{0}', parameters('time')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('monitoringRgName'))), 'Microsoft.Resources/deployments', format('LA-Workspace-Wait-{0}', parameters('time')))]",
                 "[subscriptionResourceId(parameters('subscriptionId'), 'Microsoft.Resources/deployments', format('Monitoing-RG-{0}', parameters('time')))]"
               ]
             },
@@ -8253,7 +8251,7 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('monitoringRgName'))), 'Microsoft.Resources/deployments', format('LA-Workspace-Wait-{0}', parameters('time')))]"
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('monitoringRgName'))), 'Microsoft.Resources/deployments', format('LA-Workspace-{0}', parameters('time')))]"
               ]
             }
           ],
@@ -8291,9 +8289,6 @@
             "value": "[parameters('createAvdVnet')]"
           },
           "deployAsg": "[if(or(or(parameters('avdDeploySessionHosts'), parameters('createAvdFslogixDeployment')), parameters('createMsixDeployment')), createObject('value', true()), createObject('value', false()))]",
-          "existingPeSubnetResourceId": {
-            "value": "[parameters('existingVnetPrivateEndpointSubnetResourceId')]"
-          },
           "existingAvdSubnetResourceId": {
             "value": "[parameters('existingVnetAvdSubnetResourceId')]"
           },
@@ -8398,8 +8393,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "12598513227027439427"
+              "version": "0.17.1.54307",
+              "templateHash": "3756011210515160191"
             }
           },
           "parameters": {
@@ -8426,12 +8421,6 @@
               "type": "string",
               "metadata": {
                 "description": "Existing virtual network subnet for AVD."
-              }
-            },
-            "existingPeSubnetResourceId": {
-              "type": "string",
-              "metadata": {
-                "description": "Existing virtual network subnet for private endpoints."
               }
             },
             "computeObjectsRgName": {
@@ -18153,14 +18142,8 @@
           "deployScalingPlan": {
             "value": "[parameters('avdDeployScalingPlan')]"
           },
-          "createSessionHosts": {
-            "value": "[parameters('avdDeploySessionHosts')]"
-          },
           "storageManagedIdentityName": {
             "value": "[variables('varStorageManagedIdentityName')]"
-          },
-          "cleanUpManagedIdentityName": {
-            "value": "[variables('varCleanUpManagedIdentityName')]"
           },
           "enableStartVmOnConnect": {
             "value": "[parameters('avdStartVmOnConnect')]"
@@ -18182,8 +18165,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "3253016444031789965"
+              "version": "0.17.1.54307",
+              "templateHash": "16001375654748927393"
             }
           },
           "parameters": {
@@ -18253,19 +18236,7 @@
                 "description": "Storage managed identity name."
               }
             },
-            "cleanUpManagedIdentityName": {
-              "type": "string",
-              "metadata": {
-                "description": "Clean up managed identity name."
-              }
-            },
             "createStorageDeployment": {
-              "type": "bool",
-              "metadata": {
-                "description": "Deploy Storage setup."
-              }
-            },
-            "createSessionHosts": {
               "type": "bool",
               "metadata": {
                 "description": "Deploy Storage setup."
@@ -18301,10 +18272,6 @@
             "varDesktopVirtualizationPowerOnOffContributorRole": {
               "id": "40c5ff49-9181-41f8-ae61-143b0e78555e",
               "name": "Desktop Virtualization Power On Off Contributor"
-            },
-            "varContributorRole": {
-              "id": "b24988ac-6180-42a0-ab88-20f7382dd24c",
-              "name": "Contributor"
             },
             "computeAndServiceObjectsRgs": [
               {
@@ -18675,8 +18642,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "7754983815852819350"
+                      "version": "0.17.1.54307",
+                      "templateHash": "15136491551081535379"
                     }
                   },
                   "parameters": {
@@ -18697,14 +18664,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "roleAssignments": {
                       "type": "array",
@@ -18798,8 +18765,8 @@
                           "metadata": {
                             "_generator": {
                               "name": "bicep",
-                              "version": "0.21.1.54444",
-                              "templateHash": "5263933546195004806"
+                              "version": "0.17.1.54307",
+                              "templateHash": "8490200634198428200"
                             }
                           },
                           "parameters": {
@@ -19003,8 +18970,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "8145106657487286483"
+                      "version": "0.17.1.54307",
+                      "templateHash": "6119857452463366145"
                     }
                   },
                   "parameters": {
@@ -19145,14 +19112,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "tags": {
                       "type": "object",
@@ -21012,8 +20979,7 @@
                 }
               },
               "dependsOn": [
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('storageObjectsRgName'))), 'Microsoft.Resources/deployments', format('MI-Storage-{0}', parameters('time')))]",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('storageObjectsRgName'))), 'Microsoft.Resources/deployments', format('Managed-Identity-Wait-{0}', parameters('time')))]"
+                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('storageObjectsRgName'))), 'Microsoft.Resources/deployments', format('MI-Storage-{0}', parameters('time')))]"
               ]
             },
             {
@@ -22780,8 +22746,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "17317977123822737513"
+                      "version": "0.17.1.54307",
+                      "templateHash": "10569201387143117913"
                     }
                   },
                   "parameters": {
@@ -23343,14 +23309,6 @@
             "managedIdentityStorageClientId": {
               "type": "string",
               "value": "[if(parameters('createStorageDeployment'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('storageObjectsRgName'))), 'Microsoft.Resources/deployments', format('MI-Storage-{0}', parameters('time'))), '2022-09-01').outputs.clientId.value, '')]"
-            },
-            "managedIdentityCleanUpResourceId": {
-              "type": "string",
-              "value": "[if(or(parameters('createStorageDeployment'), parameters('createSessionHosts')), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.Resources/deployments', format('MI-CleanUp-{0}', parameters('time'))), '2022-09-01').outputs.resourceId.value, '')]"
-            },
-            "managedIdentityCleanUpClientId": {
-              "type": "string",
-              "value": "[if(or(parameters('createStorageDeployment'), parameters('createSessionHosts')), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.Resources/deployments', format('MI-CleanUp-{0}', parameters('time'))), '2022-09-01').outputs.clientId.value, '')]"
             }
           }
         }
@@ -23423,8 +23381,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "1439819306129127820"
+              "version": "0.17.1.54307",
+              "templateHash": "12497703365980086846"
             }
           },
           "parameters": {
@@ -25975,8 +25933,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "8145106657487286483"
+                      "version": "0.17.1.54307",
+                      "templateHash": "6119857452463366145"
                     }
                   },
                   "parameters": {
@@ -26117,14 +26075,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "tags": {
                       "type": "object",
@@ -32182,8 +32140,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "17547683740547410047"
+              "version": "0.17.1.54307",
+              "templateHash": "2907237861517290313"
             }
           },
           "parameters": {
@@ -36727,8 +36685,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "8145106657487286483"
+                      "version": "0.17.1.54307",
+                      "templateHash": "6119857452463366145"
                     }
                   },
                   "parameters": {
@@ -36869,14 +36827,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "tags": {
                       "type": "object",
@@ -37099,8 +37057,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "3332339003647302114"
+              "version": "0.17.1.54307",
+              "templateHash": "443290892200518911"
             }
           },
           "parameters": {
@@ -37358,8 +37316,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "13264683594123465479"
+                      "version": "0.17.1.54307",
+                      "templateHash": "13503792698356233940"
                     }
                   },
                   "parameters": {
@@ -37470,7 +37428,7 @@
                       "type": "bool",
                       "defaultValue": true,
                       "metadata": {
-                        "description": "Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD). The default value is null, which is equivalent to true."
+                        "description": "Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Microsoft Entra ID. The default value is null, which is equivalent to true."
                       }
                     },
                     "privateEndpoints": {
@@ -41299,8 +41257,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "3332339003647302114"
+              "version": "0.17.1.54307",
+              "templateHash": "443290892200518911"
             }
           },
           "parameters": {
@@ -41558,8 +41516,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "13264683594123465479"
+                      "version": "0.17.1.54307",
+                      "templateHash": "13503792698356233940"
                     }
                   },
                   "parameters": {
@@ -41670,7 +41628,7 @@
                       "type": "bool",
                       "defaultValue": true,
                       "metadata": {
-                        "description": "Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD). The default value is null, which is equivalent to true."
+                        "description": "Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Microsoft Entra ID. The default value is null, which is equivalent to true."
                       }
                     },
                     "privateEndpoints": {
@@ -45996,8 +45954,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.21.1.54444",
-              "templateHash": "5880973515767091387"
+              "version": "0.17.1.54307",
+              "templateHash": "5800190286840239570"
             }
           },
           "parameters": {
@@ -50657,8 +50615,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "8145106657487286483"
+                      "version": "0.17.1.54307",
+                      "templateHash": "6119857452463366145"
                     }
                   },
                   "parameters": {
@@ -50799,14 +50757,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "tags": {
                       "type": "object",
@@ -51189,8 +51147,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "8145106657487286483"
+                      "version": "0.17.1.54307",
+                      "templateHash": "6119857452463366145"
                     }
                   },
                   "parameters": {
@@ -51331,14 +51289,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "tags": {
                       "type": "object",
@@ -51720,8 +51678,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.21.1.54444",
-                      "templateHash": "8145106657487286483"
+                      "version": "0.17.1.54307",
+                      "templateHash": "6119857452463366145"
                     }
                   },
                   "parameters": {
@@ -51862,14 +51820,14 @@
                     "lock": {
                       "type": "string",
                       "defaultValue": "",
+                      "metadata": {
+                        "description": "Optional. Specify the type of lock."
+                      },
                       "allowedValues": [
                         "",
                         "CanNotDelete",
                         "ReadOnly"
-                      ],
-                      "metadata": {
-                        "description": "Optional. Specify the type of lock."
-                      }
+                      ]
                     },
                     "tags": {
                       "type": "object",
@@ -52087,8 +52045,8 @@
                 }
               },
               "dependsOn": [
-                "sessionHosts",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('computeObjectsRgName'))), 'Microsoft.Resources/deployments', format('SH-Mon-Wait-{0}-{1}', parameters('batchId'), parameters('time')))]"
+                "monitoring",
+                "sessionHosts"
               ]
             },
             {
@@ -52197,8 +52155,8 @@
               },
               "dependsOn": [
                 "configureFsLogixAvdHosts",
-                "sessionHosts",
-                "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('subscriptionId')), format('{0}', parameters('computeObjectsRgName'))), 'Microsoft.Resources/deployments', format('SH-Mon-Wait-{0}-{1}', parameters('batchId'), parameters('time')))]"
+                "monitoring",
+                "sessionHosts"
               ]
             }
           ]

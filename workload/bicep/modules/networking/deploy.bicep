@@ -15,9 +15,6 @@ param deployAsg bool
 @sys.description('Existing virtual network subnet for AVD.')
 param existingAvdSubnetResourceId string
 
-@sys.description('Existing virtual network subnet for private endpoints.')
-param existingPeSubnetResourceId string
-
 @sys.description('Resource Group Name for the AVD session hosts')
 param computeObjectsRgName string
 
@@ -147,7 +144,6 @@ var varExistingAvdVnetResourceId = !createVnet ? '/subscriptions/${varExistingAv
 var varExistingHubSubId = split(existingHubVnetResourceId, '/')[2]
 var varExistingHubSubRgName = split(existingHubVnetResourceId, '/')[4]
 var varExistingHubVnetName = split(existingHubVnetResourceId, '/')[8]
-
 // =========== //
 // Deployments //
 // =========== //
