@@ -312,7 +312,7 @@
         "description": "Does the hub contains a virtual network gateway. (Default: false)"
       }
     },
-    "deployAvdFirewall": {
+    "deployFirewall": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
@@ -8037,8 +8037,8 @@
           },
           "tags": "[if(parameters('createResourceTags'), createObject('value', union(variables('varCustomResourceTags'), variables('varAvdDefaultTags'))), createObject('value', variables('varAvdDefaultTags')))]",
           "alaWorkspaceResourceId": "[if(parameters('avdDeployMonitoring'), if(parameters('deployAlaWorkspace'), createObject('value', reference(subscriptionResourceId('Microsoft.Resources/deployments', format('Monitoring-{0}', parameters('time'))), '2022-09-01').outputs.avdAlaWorkspaceResourceId.value), createObject('value', parameters('alaExistingWorkspaceResourceId'))), createObject('value', ''))]",
-          "deployAvdFirewall": {
-            "value": "[parameters('deployAvdFirewall')]"
+          "deployFirewall": {
+            "value": "[parameters('deployFirewall')]"
           },
           "firewallName": {
             "value": "[variables('varFiwewallName')]"
@@ -8179,7 +8179,7 @@
                 "description": "Create virtual network peering to hub."
               }
             },
-            "deployAvdFirewall": {
+            "deployFirewall": {
               "type": "bool",
               "metadata": {
                 "description": "Create firewall and firewall policy to hub virtual network."
@@ -12585,7 +12585,7 @@
               ]
             },
             {
-              "condition": "[parameters('deployAvdFirewall')]",
+              "condition": "[parameters('deployFirewall')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('Fw-Policy-{0}', parameters('time'))]",
@@ -13027,7 +13027,7 @@
               }
             },
             {
-              "condition": "[parameters('deployAvdFirewall')]",
+              "condition": "[parameters('deployFirewall')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('Fw-Policy-Rcg-{0}', parameters('time'))]",
@@ -13337,7 +13337,7 @@
               ]
             },
             {
-              "condition": "[parameters('deployAvdFirewall')]",
+              "condition": "[parameters('deployFirewall')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('Fw-Policy-Rcg-Optional-{0}', parameters('time'))]",
@@ -13657,7 +13657,7 @@
               ]
             },
             {
-              "condition": "[parameters('deployAvdFirewall')]",
+              "condition": "[parameters('deployFirewall')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('Fw-Subnet-{0}', parameters('time'))]",
@@ -14063,7 +14063,7 @@
               }
             },
             {
-              "condition": "[parameters('deployAvdFirewall')]",
+              "condition": "[parameters('deployFirewall')]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('Fw-{0}', parameters('time'))]",

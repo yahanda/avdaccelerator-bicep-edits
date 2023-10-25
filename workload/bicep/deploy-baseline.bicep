@@ -157,7 +157,7 @@ param avdVnetPrivateDnsZoneKeyvaultId string = ''
 param vNetworkGatewayOnHub bool = false
 
 @sys.description('Create Azure Firewall and Azure Firewall Policy. (Default: false)')
-param deployAvdFirewall bool = false
+param deployFirewall bool = false
 
 @sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
 param firewallSubnetAddressPrefix string = '10.0.2.0/24'
@@ -938,7 +938,7 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         dnsServers: varDnsServers
         tags: createResourceTags ? union(varCustomResourceTags, varAvdDefaultTags) : varAvdDefaultTags
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
-        deployAvdFirewall: deployAvdFirewall
+        deployFirewall: deployFirewall
         firewallName: varFiwewallName
         firewallPolicyName: varFiwewallPolicyName
         firewallPolicyRuleCollectionGroupName: varFiwewallPolicyRuleCollectionGroupName

@@ -55,7 +55,7 @@ param remoteVnetPeeringName string
 param createVnetPeering bool
 
 @sys.description('Create firewall and firewall policy to hub virtual network.')
-param deployAvdFirewall bool
+param deployFirewall bool
 
 @sys.description('Firewall name')
 param firewallName string
@@ -437,7 +437,7 @@ module privateDnsZoneKeyVaultGov '.bicep/privateDnsZones.bicep' = if (createPriv
 }
 
 // Firewall policy
-module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/deploy.bicep' = if (deployAvdFirewall) {
+module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
     name: 'Fw-Policy-${time}'
     params: {
@@ -447,7 +447,7 @@ module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicie
 }
 
 // Firewall policy rule collection group
-module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployAvdFirewall) {
+module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
     name: 'Fw-Policy-Rcg-${time}'
     params: {
@@ -648,7 +648,7 @@ module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Netw
 }
 
 // Firewall policy optional rule collection group
-module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployAvdFirewall) {
+module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
     name: 'Fw-Policy-Rcg-Optional-${time}'
     params: {
@@ -859,7 +859,7 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
 }
 
 // Azure Firewall subnet
-module hubVirtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployAvdFirewall) {
+module hubVirtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
     name: 'Fw-Subnet-${time}'
     params: {
@@ -870,7 +870,7 @@ module hubVirtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.N
 }
 
 // Azure Firewall
-module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/deploy.bicep' = if (deployAvdFirewall) {
+module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
     name: 'Fw-${time}'
     params: {
