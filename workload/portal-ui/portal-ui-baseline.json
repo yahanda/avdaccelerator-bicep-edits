@@ -1600,7 +1600,6 @@
                                         {
                                             "name": "firewallInfoBox",
                                             "type": "Microsoft.Common.InfoBox",
-                                            "visible": true,
                                             "options": {
                                                 "text": "Azure Firewall, Azure Firewall Policy, and Azure Firewall subnet will be created in the vNet for protection of AVD deployments.",
                                                 "uri": "https://learn.microsoft.com/azure/firewall/protect-azure-virtual-desktop",
