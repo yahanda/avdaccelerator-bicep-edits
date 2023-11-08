@@ -1488,7 +1488,7 @@
                                                 {
                                                     "name": "firewallSubnetSize",
                                                     "type": "Microsoft.Common.TextBox",
-                                                    "visible": "[not(steps('network').firewallOptions.firewallSettings.firewallSettingsInHubVirtualNetwork.firewallSubnets.name))]",
+                                                    "visible": "[not(empty((steps('network').firewallOptions.firewallSettings.firewallSettingsInHubVirtualNetwork.firewallSubnets.name)))]",
                                                     "label": "AzureFirewallSubnet address prefix",
                                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                                     "placeholder": "Example: 10.0.2.0/24",
