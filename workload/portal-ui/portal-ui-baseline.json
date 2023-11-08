@@ -1474,6 +1474,14 @@
                                     }
                                 },
                                 {
+                                    "name": "firewallSubnetInHubVirtualNetworkInfoBoxTEST",
+                                    "type": "Microsoft.Common.InfoBox",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork)]",
+                                    "options": {
+                                        "text": "[steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.name]"
+                                    }
+                                },
+                                {
                                     "name": "firewallSubnetSizeInHubVirtualNetwork",
                                     "type": "Microsoft.Common.TextBox",
                                     "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, not(empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.name)))]",
@@ -1481,7 +1489,7 @@
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
                                     "constraints": {
-                                        "required": true,
+                                        "required": "[if(and(steps('network').firewallOptions.deployFirewall, steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, not(empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.name)))), true, false]",
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(1[0-9]|2[0-6]))$",
                                         "validationMessage": "Invalid CIDR range. The address prefix must be smaller than or equal to 26."
                                     }
@@ -1565,7 +1573,7 @@
                                 {
                                     "name": "firewallSubnetSize",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork), not(steps('network').firewallOptions.firewallSubnets.name)))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork), not(empty(steps('network').firewallOptions.firewallSubnets.name))))]",
                                     "label": "AzureFirewallSubnet address prefix",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
