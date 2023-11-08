@@ -1476,7 +1476,7 @@
                                 {
                                     "name": "firewallSubnetSizeInHubVirtualNetwork",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, not(empty(steps('network').firewallOptions.firewallSettings.firewallSubnetsInHubVirtualNetwork.name))))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, not(empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.name))))]",
                                     "label": "AzureFirewallSubnet address prefix",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
@@ -1489,7 +1489,7 @@
                                 {
                                     "name": "firewallVirtualNetworkInfoBox",
                                     "type": "Microsoft.Common.InfoBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.firewallSettings.deployFirewallInHubVirtualNetwork))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))]",
                                     "options": {
                                         "text": "vNet peering will be created to firewall vNet with access to host pool",
                                         "uri": "https://learn.microsoft.com/azure/firewall/protect-azure-virtual-desktop",
@@ -1507,7 +1507,7 @@
                                 {
                                     "name": "firewallVirtualNetworkSub",
                                     "type": "Microsoft.Common.DropDown",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.firewallSettings.deployFirewallInHubVirtualNetwork))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))]",
                                     "label": "Firewall vNet Subscription",
                                     "toolTip": "",
                                     "multiselect": false,
@@ -1516,7 +1516,7 @@
                                     "filterPlaceholder": "Filter items ...",
                                     "multiLine": true,
                                     "constraints": {
-                                        "allowedValues": "[map(steps('network').firewallOptions.firewallSettings.firewallVirtualNetworkSubs.value, (sub) => parse(concat('{\"label\":\"', sub.displayName, '\",\"description\":\"', sub.subscriptionId, '\",\"value\":\"', toLower(sub.subscriptionId), '\"}')) )]",
+                                        "allowedValues": "[map(steps('network').firewallOptions.firewallVirtualNetworkSubs.value, (sub) => parse(concat('{\"label\":\"', sub.displayName, '\",\"description\":\"', sub.subscriptionId, '\",\"value\":\"', toLower(sub.subscriptionId), '\"}')) )]",
                                         "required": true
                                     }
                                 },
@@ -1525,13 +1525,13 @@
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
                                         "method": "GET",
-                                        "path": "[concat('subscriptions/', steps('network').firewallOptions.firewallSettings.firewallVirtualNetworkSub, '/providers/Microsoft.Network/virtualNetworks?api-version=2021-08-01')]"
+                                        "path": "[concat('subscriptions/', steps('network').firewallOptions.firewallVirtualNetworkSub, '/providers/Microsoft.Network/virtualNetworks?api-version=2021-08-01')]"
                                     }
                                 },
                                 {
                                     "name": "firewallVirtualNetwork",
                                     "type": "Microsoft.Common.DropDown",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.firewallSettings.deployFirewallInHubVirtualNetwork))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))]",
                                     "label": "Firewall virtual network",
                                     "toolTip": "",
                                     "multiselect": false,
@@ -1540,14 +1540,14 @@
                                     "filterPlaceholder": "Filter items ...",
                                     "multiLine": true,
                                     "constraints": {
-                                        "allowedValues": "[map(steps('network').firewallOptions.firewallSettings.firewallVirtualNetworks.value, (vnet) => parse(concat('{\"label\":\"', vnet.name, '\",\"description\":\"', vnet.location, '\",\"value\":\"', toLower(vnet.id), '\"}')) )]",
+                                        "allowedValues": "[map(steps('network').firewallOptions.firewallVirtualNetworks.value, (vnet) => parse(concat('{\"label\":\"', vnet.name, '\",\"description\":\"', vnet.location, '\",\"value\":\"', toLower(vnet.id), '\"}')) )]",
                                         "required": true
                                     }
                                 },
                                 {
                                     "name": "firewallSubnetInfoBox",
                                     "type": "Microsoft.Common.InfoBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.firewallSettings.deployFirewallInHubVirtualNetwork))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))]",
                                     "options": {
                                         "text": "If there is no existing subnet with the name 'AzureFirewallSubnet', a new subnet with this name will be created in the vNet. The firewall will be in this subnet, and the subnet name must be 'AzureFirewallSubnet'.",
                                         "uri": "https://learn.microsoft.com/azure/firewall/tutorial-firewall-deploy-portal#create-a-vnet",
@@ -1559,13 +1559,13 @@
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
                                         "method": "GET",
-                                        "path": "[concat('subscriptions/', steps('network').firewallOptions.firewallSettings.firewallVirtualNetworkSub, '/providers/Microsoft.Network/virtualNetworks/', steps('network').firewallOptions.firewallSettings.firewallVirtualNetwork, '/subnets/AzureFirewallSubnet?api-version=2021-08-01')]"
+                                        "path": "[concat('subscriptions/', steps('network').firewallOptions.firewallVirtualNetworkSub, '/providers/Microsoft.Network/virtualNetworks/', steps('network').firewallOptions.firewallVirtualNetwork, '/subnets/AzureFirewallSubnet?api-version=2021-08-01')]"
                                     }
                                 },
                                 {
                                     "name": "firewallSubnetSize",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.firewallSettings.deployFirewallInHubVirtualNetwork)), not(steps('network').firewallOptions.firewallSettings.firewallSubnets.name)))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork)), not(steps('network').firewallOptions.firewallSubnets.name)))]",
                                     "label": "AzureFirewallSubnet address prefix",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
