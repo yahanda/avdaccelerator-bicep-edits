@@ -1476,7 +1476,7 @@
                                 {
                                     "name": "firewallSubnetSizeInHubVirtualNetwork",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, not(empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.name))))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, not(empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.name)))]",
                                     "label": "AzureFirewallSubnet address prefix",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
@@ -1565,7 +1565,7 @@
                                 {
                                     "name": "firewallSubnetSize",
                                     "type": "Microsoft.Common.TextBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork)), not(steps('network').firewallOptions.firewallSubnets.name)))]",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork), not(steps('network').firewallOptions.firewallSubnets.name)))]",
                                     "label": "AzureFirewallSubnet address prefix",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
