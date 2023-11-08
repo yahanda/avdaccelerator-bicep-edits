@@ -1481,7 +1481,7 @@
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
                                     "constraints": {
-                                        "required": "[if(and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork))), true, false]",
+                                        "required": true,
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(1[0-9]|2[0-6]))$",
                                         "validationMessage": "Invalid CIDR range. The address prefix must be smaller than or equal to 26."
                                     }
@@ -1517,7 +1517,7 @@
                                     "multiLine": true,
                                     "constraints": {
                                         "allowedValues": "[map(steps('network').firewallOptions.firewallVirtualNetworkSubs.value, (sub) => parse(concat('{\"label\":\"', sub.displayName, '\",\"description\":\"', sub.subscriptionId, '\",\"value\":\"', toLower(sub.subscriptionId), '\"}')) )]",
-                                        "required": "[if(and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))), true, false]"
+                                        "required": true
                                     }
                                 },
                                 {
@@ -1541,7 +1541,7 @@
                                     "multiLine": true,
                                     "constraints": {
                                         "allowedValues": "[map(steps('network').firewallOptions.firewallVirtualNetworks.value, (vnet) => parse(concat('{\"label\":\"', vnet.name, '\",\"description\":\"', vnet.location, '\",\"value\":\"', toLower(vnet.id), '\"}')) )]",
-                                        "required": "[if(and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))), true, false]"
+                                        "required": true
                                     }
                                 },
                                 {
@@ -1570,7 +1570,7 @@
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
                                     "constraints": {
-                                        "required": "[if(and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork), empty(steps('network').firewallOptions.firewallSubnets)))), true, false]",
+                                        "required": true,
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(1[0-9]|2[0-6]))$",
                                         "validationMessage": "Invalid CIDR range. The address prefix must be smaller than or equal to 26."
                                     }
