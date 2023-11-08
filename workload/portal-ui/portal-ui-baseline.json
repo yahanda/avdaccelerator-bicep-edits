@@ -1456,9 +1456,9 @@
                                         {
                                             "name": "deployFirewallInHubVirtualNetwork",
                                             "type": "Microsoft.Common.CheckBox",
-                                            "visible": "[not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork))]",
+                                            "visible": true,
                                             "label": "Deploy Azure Firewall in Hub vNet",
-                                            "defaultValue": "[if(not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), true, false)]",
+                                            "defaultValue": true,
                                             "toolTip": "Create Azure Firewall and Azure Firewall Policy in Hub vNet."
                                         },
                                         {   
