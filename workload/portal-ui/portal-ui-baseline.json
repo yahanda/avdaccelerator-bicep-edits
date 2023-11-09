@@ -1456,16 +1456,6 @@
                                     "toolTip": "Create Azure Firewall and Azure Firewall Policy in Hub vNet."
                                 },
                                 {
-                                    "name": "firewallSubnetInHubVirtualNetworkInfoBox",
-                                    "type": "Microsoft.Common.InfoBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork)]",
-                                    "options": {
-                                        "text": "If there is no existing subnet with the name 'AzureFirewallSubnet', a new subnet with this name will be created in the Hub vNet. The firewall will be in this subnet, and the subnet name must be 'AzureFirewallSubnet'.",
-                                        "uri": "https://learn.microsoft.com/azure/firewall/tutorial-firewall-deploy-portal#create-a-vnet",
-                                        "style": "info"
-                                    }
-                                },
-                                {
                                     "name": "firewallSubnetsInHubVirtualNetwork",
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
@@ -1487,11 +1477,21 @@
                                     }
                                 },
                                 {
+                                    "name": "firewallSubnetInHubVirtualNetworkInfoBox",
+                                    "type": "Microsoft.Common.InfoBox",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork))]",
+                                    "options": {
+                                        "text": "A new subnet will be created in the Hub vNet and the firewall will be in this subnet. The subnet name must be 'AzureFirewallSubnet' and the subnet mask must be at least a /26.",
+                                        "uri": "https://learn.microsoft.com/azure/firewall/tutorial-firewall-deploy-portal#create-a-vnet",
+                                        "style": "info"
+                                    }
+                                },
+                                {
                                     "name": "firewallVirtualNetworkInfoBox",
                                     "type": "Microsoft.Common.InfoBox",
                                     "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))]",
                                     "options": {
-                                        "text": "vNet peering will be created to firewall vNet with access to host pool",
+                                        "text": "When selecting existing vNet other than Hub vNet as the firewall location, vNet peering will be created to the vNet with access to host pool.",
                                         "uri": "https://learn.microsoft.com/azure/firewall/protect-azure-virtual-desktop",
                                         "style": "info"
                                     }
@@ -1545,16 +1545,6 @@
                                     }
                                 },
                                 {
-                                    "name": "firewallSubnetInfoBox",
-                                    "type": "Microsoft.Common.InfoBox",
-                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork))]",
-                                    "options": {
-                                        "text": "If there is no existing subnet with the name 'AzureFirewallSubnet', a new subnet with this name will be created in the vNet. The firewall will be in this subnet, and the subnet name must be 'AzureFirewallSubnet'.",
-                                        "uri": "https://learn.microsoft.com/azure/firewall/tutorial-firewall-deploy-portal#create-a-vnet",
-                                        "style": "info"
-                                    }
-                                },
-                                {
                                     "name": "firewallSubnets",
                                     "type": "Microsoft.Solutions.ArmApiControl",
                                     "request": {
@@ -1573,6 +1563,16 @@
                                         "required": true,
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(1[0-9]|2[0-6]))$",
                                         "validationMessage": "Invalid CIDR range. The address prefix must be smaller than or equal to 26."
+                                    }
+                                },
+                                {
+                                    "name": "firewallSubnetInfoBox",
+                                    "type": "Microsoft.Common.InfoBox",
+                                    "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork), empty(steps('network').firewallOptions.firewallSubnets))]",
+                                    "options": {
+                                        "text": "A new subnet will be created in the vNet and the firewall will be in this subnet. The subnet name must be 'AzureFirewallSubnet' and the subnet mask must be at least a /26.",
+                                        "uri": "https://learn.microsoft.com/azure/firewall/tutorial-firewall-deploy-portal#create-a-vnet",
+                                        "style": "info"
                                     }
                                 },
                                 {
