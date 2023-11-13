@@ -946,28 +946,28 @@ module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/d
 }
 
 // AVD route table for Firewall
-module routeTableAvdforFirewall '../../../../carml/1.3.0/Microsoft.Network/routeTables/deploy.bicep' = if (createVnet && deployFirewall) {
-    scope: resourceGroup('${workloadSubsId}', '${networkObjectsRgName}')
-    name: 'Route-Table-AVD-Fw-${time}'
-    params: {
-        name: avdRouteTableName
-        location: sessionHostLocation
-        tags: tags
-        routes: varCreateAvdStaicRoute ? [
-            {
-                name: 'default'
-                properties: {
-                    addressPrefix: '0.0.0.0/0'
-                    nextHopIpAddress: azureFirewall.outputs.privateIp
-                    nextHopType: 'VirtualAppliance'
-                }
-            }
-        ] : []
-    }
-    dependsOn: [
-        azureFirewall
-    ]
-}
+// module routeTableAvdforFirewall '../../../../carml/1.3.0/Microsoft.Network/routeTables/deploy.bicep' = if (createVnet && deployFirewall) {
+//     scope: resourceGroup('${workloadSubsId}', '${networkObjectsRgName}')
+//     name: 'Route-Table-AVD-Fw-${time}'
+//     params: {
+//         name: avdRouteTableName
+//         location: sessionHostLocation
+//         tags: tags
+//         routes: varCreateAvdStaicRoute ? [
+//             {
+//                 name: 'default'
+//                 properties: {
+//                     addressPrefix: '0.0.0.0/0'
+//                     nextHopIpAddress: azureFirewall.outputs.privateIp
+//                     nextHopType: 'VirtualAppliance'
+//                 }
+//             }
+//         ] : []
+//     }
+//     dependsOn: [
+//         azureFirewall
+//     ]
+// }
 
 // =========== //
 // Outputs //
