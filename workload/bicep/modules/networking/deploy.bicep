@@ -936,6 +936,7 @@ module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/d
     name: 'Fw-${time}'
     params: {
         name: firewallName
+        zones: []
         vNetId: firewallVnetResourceId
         firewallPolicyId: firewallPolicy.outputs.resourceId
     }
