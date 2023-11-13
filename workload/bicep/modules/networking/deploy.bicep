@@ -920,7 +920,7 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
 }
 
 // Azure Firewall subnet
-module hubVirtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployFirewall) {
+module virtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Subnet-${time}'
     params: {
@@ -936,12 +936,12 @@ module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/d
     name: 'Fw-${time}'
     params: {
         name: firewallName
-        vNetId: existingHubVnetResourceId
+        vNetId: firewallVnetResourceId
         firewallPolicyId: firewallPolicy.outputs.resourceId
     }
     dependsOn: [
         firewallPolicyOptionalRuleCollectionGroup
-        hubVirtualNetworkAzureFirewallSubnet
+        virtualNetworkAzureFirewallSubnet
     ]
 }
 
