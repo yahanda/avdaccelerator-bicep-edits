@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "1728772615600776975"
+      "templateHash": "14675817864886083077"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -8111,7 +8111,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "15613686645614990169"
+              "templateHash": "7522148216674431877"
             }
           },
           "parameters": {
@@ -15467,7 +15467,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "13898684255357952418"
+                      "templateHash": "13441509441096819021"
                     }
                   },
                   "parameters": {
@@ -15579,11 +15579,7 @@
                     },
                     "zones": {
                       "type": "array",
-                      "defaultValue": [
-                        "1",
-                        "2",
-                        "3"
-                      ],
+                      "defaultValue": [],
                       "metadata": {
                         "description": "Optional. Zone numbers e.g. 1,2,3."
                       }
