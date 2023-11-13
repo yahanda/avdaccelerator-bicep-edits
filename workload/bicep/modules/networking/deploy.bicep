@@ -15,6 +15,9 @@ param deployAsg bool
 @sys.description('Existing virtual network subnet for AVD.')
 param existingAvdSubnetResourceId string
 
+@sys.description('Existing virtual network subnet for AVD.')
+param existingAvdVnetAddressPrefixes string
+
 @sys.description('Resource Group Name for the AVD session hosts')
 param computeObjectsRgName string
 
@@ -54,8 +57,20 @@ param remoteVnetPeeringName string
 @sys.description('Create virtual network peering to hub.')
 param createVnetPeering bool
 
-@sys.description('Create firewall and firewall policy to hub virtual network.')
+@sys.description('Create firewall and firewall policy.')
 param deployFirewall bool
+
+@sys.description('Create firewall and firewall Policy to hub virtual network.')
+param deployFirewallInHubVirtualNetwork bool
+
+@sys.description('Firewall virtual network')
+param firewallVnetResourceId string
+
+@sys.description('VNet peering name for AVD VNet to Firewall VNet.')
+param firewallVnetPeeringName string
+
+@sys.description('Remote VNet peering name for AVD VNet to Firewall VNet.')
+param firewallRemoteVnetPeeringName string
 
 @sys.description('Firewall name')
 param firewallName string
@@ -141,9 +156,9 @@ var varExistingAvdVnetResourceId = !createVnet ? '/subscriptions/${varExistingAv
 //var varExistingPeVnetSubRgName = split(existingPeSubnetResourceId, '/')[4]
 //var varExistingAPeVnetName = split(existingPeSubnetResourceId, '/')[8]
 //var varExistingPeVnetResourceId = '/subscriptions/${varExistingPeVnetSubId}/resourceGroups/${varExistingPeVnetSubRgName}/providers/Microsoft.Network/virtualNetworks/${varExistingAPeVnetName}'
-var varExistingHubSubId = split(existingHubVnetResourceId, '/')[2]
-var varExistingHubSubRgName = split(existingHubVnetResourceId, '/')[4]
-var varExistingHubVnetName = split(existingHubVnetResourceId, '/')[8]
+var varFirewallSubId = split(firewallVnetResourceId, '/')[2]
+var varFirewallSubRgName = split(firewallVnetResourceId, '/')[4]
+var varFirewallVnetName = split(firewallVnetResourceId, '/')[8]
 // =========== //
 // Deployments //
 // =========== //
@@ -436,9 +451,55 @@ module privateDnsZoneKeyVaultGov '.bicep/privateDnsZones.bicep' = if (createPriv
     }
 }
 
+// Firewall virtual network
+module firewallVirtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/deploy.bicep' = if (!deployFirewallInHubVirtualNetwork) {
+    scope: createVnet ? resourceGroup('${workloadSubsId}', '${networkObjectsRgName}') : resourceGroup('${varExistingAvdVnetSubId}', '${varExistingAvdVnetSubRgName}')
+    name: 'Fw-vNet-${time}'
+    params: {
+        name: createVnet ? vnetName : varExistingAvdVnetName
+        location: sessionHostLocation
+        addressPrefixes: createVnet ? array(vnetAddressPrefixes): array(existingAvdVnetAddressPrefixes)
+        peerings: createVnet ? [
+            {
+                remoteVirtualNetworkId: firewallVnetResourceId
+                name: vnetPeeringName
+                allowForwardedTraffic: true
+                allowGatewayTransit: false
+                allowVirtualNetworkAccess: true
+                doNotVerifyRemoteGateways: true
+                useRemoteGateways: vNetworkGatewayOnHub ? true : false
+                remotePeeringEnabled: true
+                remotePeeringName: remoteVnetPeeringName
+                remotePeeringAllowForwardedTraffic: true
+                remotePeeringAllowGatewayTransit: vNetworkGatewayOnHub ? true : false
+                remotePeeringAllowVirtualNetworkAccess: true
+                remotePeeringDoNotVerifyRemoteGateways: true
+                remotePeeringUseRemoteGateways: false
+            }
+        ] : [
+            {
+                remoteVirtualNetworkId: firewallVnetResourceId
+                name: firewallVnetPeeringName
+                allowForwardedTraffic: true
+                allowGatewayTransit: false
+                allowVirtualNetworkAccess: true
+                doNotVerifyRemoteGateways: true
+                useRemoteGateways:  true
+                remotePeeringEnabled: true
+                remotePeeringName: firewallRemoteVnetPeeringName
+                remotePeeringAllowForwardedTraffic: true
+                remotePeeringAllowGatewayTransit: true 
+                remotePeeringAllowVirtualNetworkAccess: true
+                remotePeeringDoNotVerifyRemoteGateways: true
+                remotePeeringUseRemoteGateways: false
+            }
+        ]
+    }
+}
+
 // Firewall policy
 module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/deploy.bicep' = if (deployFirewall) {
-    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Policy-${time}'
     params: {
         name: firewallPolicyName
@@ -448,7 +509,7 @@ module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicie
 
 // Firewall policy rule collection group
 module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployFirewall) {
-    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Policy-Rcg-${time}'
     params: {
         name: firewallPolicyRuleCollectionGroupName
@@ -649,7 +710,7 @@ module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Netw
 
 // Firewall policy optional rule collection group
 module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployFirewall) {
-    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Policy-Rcg-Optional-${time}'
     params: {
         name: firewallPolicyOptionalRuleCollectionGroupName
@@ -860,18 +921,18 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
 
 // Azure Firewall subnet
 module hubVirtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployFirewall) {
-    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Subnet-${time}'
     params: {
         addressPrefix: firewallSubnetAddressPrefix
         name: 'AzureFirewallSubnet'
-        virtualNetworkName: varExistingHubVnetName
+        virtualNetworkName: varFirewallVnetName
     }
 }
 
 // Azure Firewall
 module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/deploy.bicep' = if (deployFirewall) {
-    scope: resourceGroup('${varExistingHubSubId}', '${varExistingHubSubRgName}')
+    scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-${time}'
     params: {
         name: firewallName
@@ -881,6 +942,30 @@ module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/d
     dependsOn: [
         firewallPolicyOptionalRuleCollectionGroup
         hubVirtualNetworkAzureFirewallSubnet
+    ]
+}
+
+// AVD route table for Firewall
+module routeTableAvdforFirewall '../../../../carml/1.3.0/Microsoft.Network/routeTables/deploy.bicep' = if (createVnet && deployFirewall) {
+    scope: resourceGroup('${workloadSubsId}', '${networkObjectsRgName}')
+    name: 'Route-Table-AVD-Fw-${time}'
+    params: {
+        name: avdRouteTableName
+        location: sessionHostLocation
+        tags: tags
+        routes: varCreateAvdStaicRoute ? [
+            {
+                name: 'default'
+                properties: {
+                    addressPrefix: '0.0.0.0/0'
+                    nextHopIpAddress: azureFirewall.outputs.privateIp
+                    nextHopType: 'VirtualAppliance'
+                }
+            }
+        ] : []
+    }
+    dependsOn: [
+        azureFirewall
     ]
 }
 

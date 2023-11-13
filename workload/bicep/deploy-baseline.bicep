@@ -123,6 +123,9 @@ param createAvdVnet bool = true
 @sys.description('Existing virtual network subnet for AVD. (Default: "")')
 param existingVnetAvdSubnetResourceId string = ''
 
+@sys.description('Existing virtual network address prefixes for AVD. (Default: "")')
+param existingVnetAvdAddressPrefixes string = ''
+
 @sys.description('Existing virtual network subnet for private endpoints. (Default: "")')
 param existingVnetPrivateEndpointSubnetResourceId string = ''
 
@@ -158,6 +161,12 @@ param vNetworkGatewayOnHub bool = false
 
 @sys.description('Create Azure Firewall and Azure Firewall Policy. (Default: false)')
 param deployFirewall bool = false
+
+@sys.description('Create Azure Firewall and Azure Firewall Policy in hub virtual network. (Default: false)')
+param deployFirewallInHubVirtualNetwork bool = false
+
+@sys.description('Azure firewall virtual network. (Default: "")')
+param firewallVnetResourceId string = ''
 
 @sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
 param firewallSubnetAddressPrefix string = '10.0.2.0/24'
@@ -515,8 +524,11 @@ var varPrivateEndpointNetworksecurityGroupName = avdUseCustomNaming ? privateEnd
 var varAvdRouteTableName = avdUseCustomNaming ? avdRouteTableCustomName : 'route-avd-${varComputeStorageResourcesNamingStandard}-001'
 var varPrivateEndpointRouteTableName = avdUseCustomNaming ? privateEndpointRouteTableCustomName : 'route-pe-${varComputeStorageResourcesNamingStandard}-001'
 var varApplicationSecurityGroupName = avdUseCustomNaming ? avdApplicationSecurityGroupCustomName : 'asg-${varComputeStorageResourcesNamingStandard}-001'
-var varFiwewallName = 'fw-avd-${varHubVnetName}'
-var varFiwewallPolicyName = 'fwpol-avd-${varHubVnetName}'
+var varFirewallVnetName = (deployFirewall) ? split(firewallVnetResourceId, '/')[8] : ''
+var varFirewallVnetPeeringName = 'peer-${varFirewallVnetName}'
+var varFirewallRemoteVnetPeeringName = (createAvdVnet) ? 'peer-${varVnetName}' : 'peer-${split(existingVnetAvdSubnetResourceId, '/')[8]}'
+var varFiwewallName = 'fw-avd-${varFirewallVnetName}'
+var varFiwewallPolicyName = 'fwpol-avd-${varFirewallVnetName}'
 var varFiwewallPolicyRuleCollectionGroupName = '${varFiwewallPolicyName}-rcg'
 var varFiwewallPolicyNetworkRuleCollectionName = '${varFiwewallPolicyName}-nw-rule-collection'
 var varFiwewallPolicyOptionalRuleCollectionGroupName = '${varFiwewallPolicyName}-rcg-optional'
@@ -913,6 +925,7 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         createVnet: createAvdVnet
         deployAsg: (avdDeploySessionHosts || createAvdFslogixDeployment || createMsixDeployment) ? true : false
         existingAvdSubnetResourceId: existingVnetAvdSubnetResourceId
+        existingAvdVnetAddressPrefixes: existingVnetAvdAddressPrefixes
         createPrivateDnsZones: deployPrivateEndpointKeyvaultStorage ? createPrivateDnsZones : false
         applicationSecurityGroupName: varApplicationSecurityGroupName
         computeObjectsRgName: varComputeObjectsRgName
@@ -939,6 +952,10 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         tags: createResourceTags ? union(varCustomResourceTags, varAvdDefaultTags) : varAvdDefaultTags
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
         deployFirewall: deployFirewall
+        deployFirewallInHubVirtualNetwork: deployFirewallInHubVirtualNetwork
+        firewallVnetResourceId: firewallVnetResourceId
+        firewallVnetPeeringName: varFirewallVnetPeeringName
+        firewallRemoteVnetPeeringName: varFirewallRemoteVnetPeeringName
         firewallName: varFiwewallName
         firewallPolicyName: varFiwewallPolicyName
         firewallPolicyRuleCollectionGroupName: varFiwewallPolicyRuleCollectionGroupName
