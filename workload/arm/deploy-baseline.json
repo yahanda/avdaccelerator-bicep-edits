@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "1980367732467048409"
+      "templateHash": "18150029523121872439"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -1287,19 +1287,18 @@
     "varFslogixFileShareName": "[if(parameters('avdUseCustomNaming'), parameters('fslogixFileShareCustomName'), format('fslogix-pc-{0}-{1}-{2}-001', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentLowercase'), variables('varSessionHostLocationAcronym')))]",
     "varMsixFileShareName": "[if(parameters('avdUseCustomNaming'), parameters('msixFileShareCustomName'), format('msix-pc-{0}-{1}-{2}-001', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentLowercase'), variables('varSessionHostLocationAcronym')))]",
     "varFslogixStorageName": "[if(parameters('avdUseCustomNaming'), format('{0}fsl{1}{2}{3}', parameters('storageAccountPrefixCustomName'), variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varNamingUniqueStringThreeChar')), format('stfsl{0}{1}{2}', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varNamingUniqueStringThreeChar')))]",
-    "varFslogixStorageFqdn": "[format('{0}.file.{1}', variables('varFslogixStorageName'), environment().suffixes.storage)]",
+    "varFslogixStorageFqdn": "[if(parameters('createAvdFslogixDeployment'), format('{0}.file.{1}', variables('varFslogixStorageName'), environment().suffixes.storage), '')]",
     "varMsixStorageFqdn": "[format('{0}.file.{1}', variables('varMsixStorageName'), environment().suffixes.storage)]",
     "varMsixStorageName": "[if(parameters('avdUseCustomNaming'), format('{0}msx{1}{2}{3}', parameters('storageAccountPrefixCustomName'), variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varNamingUniqueStringThreeChar')), format('stmsx{0}{1}{2}', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varNamingUniqueStringThreeChar')))]",
     "varManagementVmName": "[format('vmmgmt{0}{1}{2}', variables('varDeploymentPrefixLowercase'), variables('varDeploymentEnvironmentComputeStorage'), variables('varSessionHostLocationAcronym'))]",
     "varAlaWorkspaceName": "[if(parameters('avdUseCustomNaming'), parameters('avdAlaWorkspaceCustomName'), format('log-avd-{0}-{1}', variables('varDeploymentEnvironmentLowercase'), variables('varManagementPlaneLocationAcronym')))]",
     "varZtKvName": "[if(parameters('avdUseCustomNaming'), format('{0}-{1}-{2}', parameters('ztKvPrefixCustomName'), variables('varComputeStorageResourcesNamingStandard'), variables('varNamingUniqueStringTwoChar')), format('kv-key-{0}-{1}', variables('varComputeStorageResourcesNamingStandard'), variables('varNamingUniqueStringTwoChar')))]",
     "varZtKvPrivateEndpointName": "[format('pe-{0}-vault', variables('varZtKvName'))]",
-    "varFslogixSharePath": "[format('\\\\{0}.file.{1}\\{2}', variables('varFslogixStorageName'), environment().suffixes.storage, variables('varFslogixFileShareName'))]",
+    "varFslogixSharePath": "[if(parameters('createAvdFslogixDeployment'), format('\\\\{0}.file.{1}\\{2}', variables('varFslogixStorageName'), environment().suffixes.storage, variables('varFslogixFileShareName')), '')]",
     "varBaseScriptUri": "https://raw.githubusercontent.com/Azure/avdaccelerator/main/workload/",
     "varSessionHostConfigurationScriptUri": "[format('{0}scripts/Set-SessionHostConfiguration.ps1', variables('varBaseScriptUri'))]",
     "varSessionHostConfigurationScript": "./Set-SessionHostConfiguration.ps1",
     "varDiskEncryptionKeyExpirationInEpoch": "[dateTimeToEpoch(dateTimeAdd(parameters('time'), format('P{0}D', string(parameters('diskEncryptionKeyExpirationInDays')))))]",
-    "varAvdAgentPackageLocation": "[format('https://wvdportalstorageblob.blob.{0}/galleryartifacts/Configuration_09-08-2022.zip', environment().suffixes.storage)]",
     "varCreateStorageDeployment": "[if(or(parameters('createAvdFslogixDeployment'), equals(parameters('createMsixDeployment'), true())), true(), false())]",
     "varFslogixStorageSku": "[if(parameters('zoneRedundantStorage'), format('{0}_ZRS', parameters('fslogixStoragePerformance')), format('{0}_LRS', parameters('fslogixStoragePerformance')))]",
     "varMsixStorageSku": "[if(parameters('zoneRedundantStorage'), format('{0}_ZRS', parameters('msixStoragePerformance')), format('{0}_LRS', parameters('msixStoragePerformance')))]",
@@ -1503,7 +1502,7 @@
         "version": "latest"
       }
     },
-    "varStorageAzureFilesDscAgentPackageLocation": "https://github.com/Azure/avdaccelerator/raw/main/workload/scripts/DSCStorageScripts.zip",
+    "varStorageAzureFilesDscAgentPackageLocation": "https://github.com/Azure/avdaccelerator/raw/main/workload/scripts/DSCStorageScripts/1.0.0/DSCStorageScripts.zip",
     "varStorageToDomainScriptUri": "[format('{0}scripts/Manual-DSC-Storage-Scripts.ps1', variables('varBaseScriptUri'))]",
     "varStorageToDomainScript": "./Manual-DSC-Storage-Scripts.ps1",
     "varOuStgPath": "[if(not(empty(parameters('storageOuPath'))), format('\"{0}\"', parameters('storageOuPath')), format('\"{0}\"', variables('varDefaultStorageOuPath')))]",
@@ -29631,7 +29630,7 @@
           "privateEndpoints": "[if(parameters('deployPrivateEndpointKeyvaultStorage'), createObject('value', createArray(createObject('name', variables('varWrklKvPrivateEndpointName'), 'subnetResourceId', if(parameters('createAvdVnet'), format('{0}/subnets/{1}', reference(subscriptionResourceId('Microsoft.Resources/deployments', format('Networking-{0}', parameters('time'))), '2022-09-01').outputs.virtualNetworkResourceId.value, variables('varVnetPrivateEndpointSubnetName')), parameters('existingVnetPrivateEndpointSubnetResourceId')), 'customNetworkInterfaceName', format('nic-01-{0}', variables('varWrklKvPrivateEndpointName')), 'service', 'vault', 'privateDnsZoneGroup', createObject('privateDNSResourceIds', createArray(if(parameters('createPrivateDnsZones'), reference(subscriptionResourceId('Microsoft.Resources/deployments', format('Networking-{0}', parameters('time'))), '2022-09-01').outputs.KeyVaultDnsZoneResourceId.value, parameters('avdVnetPrivateDnsZoneKeyvaultId'))))))), createObject('value', createArray()))]",
           "secrets": {
             "value": {
-              "secureList": "[if(not(equals(parameters('avdIdentityServiceProvider'), 'AAD')), createArray(createObject('name', 'vmLocalUserPassword', 'value', parameters('avdVmLocalUserPassword'), 'contentType', 'Session host local user credentials'), createObject('name', 'vmLocalUserName', 'value', parameters('avdVmLocalUserName'), 'contentType', 'Session host local user credentials'), createObject('name', 'domainJoinUserName', 'value', parameters('avdDomainJoinUserName'), 'contentType', 'Domain join credentials'), createObject('name', 'domainJoinUserPassword', 'value', parameters('avdDomainJoinUserPassword'), 'contentType', 'Domain join credentials')), createArray(createObject('name', 'vmLocalUserPassword', 'value', parameters('avdVmLocalUserPassword'), 'contentType', 'Session host local user credentials'), createObject('name', 'vmLocalUserName', 'value', parameters('avdVmLocalUserName'), 'contentType', 'Session host local user credentials'), createObject('name', 'domainJoinUserName', 'value', 'AAD-Joined-Deployment-No-Domain-Credentials', 'contentType', 'Domain join credentials'), createObject('name', 'domainJoinUserPassword', 'value', 'AAD-Joined-Deployment-No-Domain-Credentials', 'contentType', 'Domain join credentials')))]"
+              "secureList": "[if(not(equals(parameters('avdIdentityServiceProvider'), 'AAD')), createArray(createObject('name', 'vmLocalUserPassword', 'value', parameters('avdVmLocalUserPassword'), 'contentType', 'Session host local user credentials'), createObject('name', 'vmLocalUserName', 'value', parameters('avdVmLocalUserName'), 'contentType', 'Session host local user credentials'), createObject('name', 'domainJoinUserName', 'value', parameters('avdDomainJoinUserName'), 'contentType', 'Domain join credentials'), createObject('name', 'domainJoinUserPassword', 'value', parameters('avdDomainJoinUserPassword'), 'contentType', 'Domain join credentials')), createArray(createObject('name', 'vmLocalUserPassword', 'value', parameters('avdVmLocalUserPassword'), 'contentType', 'Session host local user credentials'), createObject('name', 'vmLocalUserName', 'value', parameters('avdVmLocalUserName'), 'contentType', 'Session host local user credentials'), createObject('name', 'domainJoinUserName', 'value', 'NoUsername', 'contentType', 'Domain join credentials'), createObject('name', 'domainJoinUserPassword', 'value', 'NoPassword', 'contentType', 'Domain join credentials')))]"
             }
           },
           "tags": "[if(parameters('createResourceTags'), createObject('value', union(variables('varCustomResourceTags'), variables('varAvdDefaultTags'), variables('varWorkloadKeyvaultTag'))), createObject('value', union(variables('varAvdDefaultTags'), variables('varWorkloadKeyvaultTag'))))]"
@@ -36191,6 +36190,9 @@
           "storagePurpose": {
             "value": "fslogix"
           },
+          "vmLocalUserName": {
+            "value": "[parameters('avdVmLocalUserName')]"
+          },
           "fileShareName": {
             "value": "[variables('varFslogixFileShareName')]"
           },
@@ -36269,7 +36271,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "15066392544574504888"
+              "templateHash": "13591692348976261694"
             }
           },
           "parameters": {
@@ -36349,6 +36351,12 @@
               "type": "string",
               "metadata": {
                 "description": "AVD session host domain join credentials."
+              }
+            },
+            "vmLocalUserName": {
+              "type": "string",
+              "metadata": {
+                "description": "AVD session host local admin credentials."
               }
             },
             "storageSku": {
@@ -36457,7 +36465,6 @@
           },
           "variables": {
             "varAzureCloudName": "[environment().name]",
-            "varStoragePurposeLower": "[toLower(parameters('storagePurpose'))]",
             "varAvdFileShareLogsDiagnostic": [
               "allLogs"
             ],
@@ -36467,7 +36474,8 @@
             "varWrklStoragePrivateEndpointName": "[format('pe-{0}-file', parameters('storageAccountName'))]",
             "varDirectoryServiceOptions": "[if(equals(parameters('identityServiceProvider'), 'AADDS'), 'AADDS', if(equals(parameters('identityServiceProvider'), 'AAD'), 'AADKERB', 'None'))]",
             "varSecurityPrincipalName": "[if(not(empty(parameters('securityPrincipalName'))), parameters('securityPrincipalName'), 'none')]",
-            "varStorageToDomainScriptArgs": "[format('-DscPath {0} -StorageAccountName {1} -StorageAccountRG {2} -StoragePurpose {3} -DomainName {4} -IdentityServiceProvider {5} -AzureCloudEnvironment {6} -SubscriptionId {7} -DomainAdminUserName {8} -CustomOuPath {9} -OUName {10} -ShareName {11} -ClientId {12} -SecurityPrincipalName {13} -StorageAccountFqdn {14} ', parameters('dscAgentPackageLocation'), parameters('storageAccountName'), parameters('storageObjectsRgName'), parameters('storagePurpose'), parameters('identityDomainName'), parameters('identityServiceProvider'), variables('varAzureCloudName'), parameters('workloadSubsId'), parameters('domainJoinUserName'), parameters('storageCustomOuPath'), parameters('ouStgPath'), parameters('fileShareName'), parameters('managedIdentityClientId'), variables('varSecurityPrincipalName'), parameters('storageAccountFqdn'))]"
+            "varAdminUserName": "[if(equals(parameters('identityServiceProvider'), 'AAD'), parameters('vmLocalUserName'), parameters('domainJoinUserName'))]",
+            "varStorageToDomainScriptArgs": "[format('-DscPath {0} -StorageAccountName {1} -StorageAccountRG {2} -StoragePurpose {3} -DomainName {4} -IdentityServiceProvider {5} -AzureCloudEnvironment {6} -SubscriptionId {7} -AdminUserName {8} -CustomOuPath {9} -OUName {10} -ShareName {11} -ClientId {12} -SecurityPrincipalName \"{13}\" -StorageAccountFqdn {14} ', parameters('dscAgentPackageLocation'), parameters('storageAccountName'), parameters('storageObjectsRgName'), parameters('storagePurpose'), parameters('identityDomainName'), parameters('identityServiceProvider'), variables('varAzureCloudName'), parameters('workloadSubsId'), variables('varAdminUserName'), parameters('storageCustomOuPath'), parameters('ouStgPath'), parameters('fileShareName'), parameters('managedIdentityClientId'), variables('varSecurityPrincipalName'), parameters('storageAccountFqdn'))]"
           },
           "resources": [
             {
@@ -36495,7 +36503,8 @@
                     "value": false
                   },
                   "publicNetworkAccess": "[if(parameters('deployPrivateEndpoint'), createObject('value', 'Disabled'), createObject('value', 'Enabled'))]",
-                  "kind": "[if(or(equals(toLower(parameters('storageSku')), toLower('Premium_LRS')), equals(toLower(parameters('storageSku')), toLower('Premium_ZRS'))), createObject('value', 'FileStorage'), createObject('value', 'StorageV2'))]",
+                  "kind": "[if(or(equals(parameters('storageSku'), 'Premium_LRS'), equals(parameters('storageSku'), 'Premium_ZRS')), createObject('value', 'FileStorage'), createObject('value', 'StorageV2'))]",
+                  "largeFileSharesState": "[if(or(equals(parameters('storageSku'), 'Standard_LRS'), equals(parameters('storageSku'), 'Standard_ZRS')), createObject('value', 'Enabled'), createObject('value', 'Disabled'))]",
                   "azureFilesIdentityBasedAuthentication": {
                     "value": {
                       "directoryServiceOptions": "[variables('varDirectoryServiceOptions')]",
@@ -40287,14 +40296,7 @@
                   "scriptArguments": {
                     "value": "[variables('varStorageToDomainScriptArgs')]"
                   },
-                  "domainJoinUserPassword": {
-                    "reference": {
-                      "keyVault": {
-                        "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('workloadSubsId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.KeyVault/vaults', parameters('wrklKvName'))]"
-                      },
-                      "secretName": "domainJoinUserPassword"
-                    }
-                  },
+                  "adminUserPassword": "[if(equals(parameters('identityServiceProvider'), 'AAD'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('workloadSubsId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.KeyVault/vaults', parameters('wrklKvName'))), 'secretName', 'vmLocalUserPassword')), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('workloadSubsId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.KeyVault/vaults', parameters('wrklKvName'))), 'secretName', 'domainJoinUserPassword')))]",
                   "baseScriptUri": {
                     "value": "[parameters('storageToDomainScriptUri')]"
                   }
@@ -40306,7 +40308,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "16297322434069639917"
+                      "templateHash": "4048736729822728060"
                     }
                   },
                   "parameters": {
@@ -40337,15 +40339,12 @@
                         "description": "Arguments for domain join script."
                       }
                     },
-                    "domainJoinUserPassword": {
+                    "adminUserPassword": {
                       "type": "securestring",
                       "metadata": {
                         "description": "Domain join user password."
                       }
                     }
-                  },
-                  "variables": {
-                    "varscriptArgumentsWithPassword": "[format('{0} -DomainAdminUserPassword {1} -verbose', parameters('scriptArguments'), parameters('domainJoinUserPassword'))]"
                   },
                   "resources": [
                     {
@@ -40361,7 +40360,7 @@
                         "settings": {},
                         "protectedSettings": {
                           "fileUris": "[array(parameters('baseScriptUri'))]",
-                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File {0} {1}', parameters('file'), variables('varscriptArgumentsWithPassword'))]"
+                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File {0} {1} -AdminUserPassword {2} -verbose', parameters('file'), parameters('scriptArguments'), parameters('adminUserPassword'))]"
                         }
                       }
                     }
@@ -40398,6 +40397,9 @@
         "parameters": {
           "storagePurpose": {
             "value": "msix"
+          },
+          "vmLocalUserName": {
+            "value": "[parameters('avdVmLocalUserName')]"
           },
           "fileShareName": {
             "value": "[variables('varMsixFileShareName')]"
@@ -40477,7 +40479,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "15066392544574504888"
+              "templateHash": "13591692348976261694"
             }
           },
           "parameters": {
@@ -40557,6 +40559,12 @@
               "type": "string",
               "metadata": {
                 "description": "AVD session host domain join credentials."
+              }
+            },
+            "vmLocalUserName": {
+              "type": "string",
+              "metadata": {
+                "description": "AVD session host local admin credentials."
               }
             },
             "storageSku": {
@@ -40665,7 +40673,6 @@
           },
           "variables": {
             "varAzureCloudName": "[environment().name]",
-            "varStoragePurposeLower": "[toLower(parameters('storagePurpose'))]",
             "varAvdFileShareLogsDiagnostic": [
               "allLogs"
             ],
@@ -40675,7 +40682,8 @@
             "varWrklStoragePrivateEndpointName": "[format('pe-{0}-file', parameters('storageAccountName'))]",
             "varDirectoryServiceOptions": "[if(equals(parameters('identityServiceProvider'), 'AADDS'), 'AADDS', if(equals(parameters('identityServiceProvider'), 'AAD'), 'AADKERB', 'None'))]",
             "varSecurityPrincipalName": "[if(not(empty(parameters('securityPrincipalName'))), parameters('securityPrincipalName'), 'none')]",
-            "varStorageToDomainScriptArgs": "[format('-DscPath {0} -StorageAccountName {1} -StorageAccountRG {2} -StoragePurpose {3} -DomainName {4} -IdentityServiceProvider {5} -AzureCloudEnvironment {6} -SubscriptionId {7} -DomainAdminUserName {8} -CustomOuPath {9} -OUName {10} -ShareName {11} -ClientId {12} -SecurityPrincipalName {13} -StorageAccountFqdn {14} ', parameters('dscAgentPackageLocation'), parameters('storageAccountName'), parameters('storageObjectsRgName'), parameters('storagePurpose'), parameters('identityDomainName'), parameters('identityServiceProvider'), variables('varAzureCloudName'), parameters('workloadSubsId'), parameters('domainJoinUserName'), parameters('storageCustomOuPath'), parameters('ouStgPath'), parameters('fileShareName'), parameters('managedIdentityClientId'), variables('varSecurityPrincipalName'), parameters('storageAccountFqdn'))]"
+            "varAdminUserName": "[if(equals(parameters('identityServiceProvider'), 'AAD'), parameters('vmLocalUserName'), parameters('domainJoinUserName'))]",
+            "varStorageToDomainScriptArgs": "[format('-DscPath {0} -StorageAccountName {1} -StorageAccountRG {2} -StoragePurpose {3} -DomainName {4} -IdentityServiceProvider {5} -AzureCloudEnvironment {6} -SubscriptionId {7} -AdminUserName {8} -CustomOuPath {9} -OUName {10} -ShareName {11} -ClientId {12} -SecurityPrincipalName \"{13}\" -StorageAccountFqdn {14} ', parameters('dscAgentPackageLocation'), parameters('storageAccountName'), parameters('storageObjectsRgName'), parameters('storagePurpose'), parameters('identityDomainName'), parameters('identityServiceProvider'), variables('varAzureCloudName'), parameters('workloadSubsId'), variables('varAdminUserName'), parameters('storageCustomOuPath'), parameters('ouStgPath'), parameters('fileShareName'), parameters('managedIdentityClientId'), variables('varSecurityPrincipalName'), parameters('storageAccountFqdn'))]"
           },
           "resources": [
             {
@@ -40703,7 +40711,8 @@
                     "value": false
                   },
                   "publicNetworkAccess": "[if(parameters('deployPrivateEndpoint'), createObject('value', 'Disabled'), createObject('value', 'Enabled'))]",
-                  "kind": "[if(or(equals(toLower(parameters('storageSku')), toLower('Premium_LRS')), equals(toLower(parameters('storageSku')), toLower('Premium_ZRS'))), createObject('value', 'FileStorage'), createObject('value', 'StorageV2'))]",
+                  "kind": "[if(or(equals(parameters('storageSku'), 'Premium_LRS'), equals(parameters('storageSku'), 'Premium_ZRS')), createObject('value', 'FileStorage'), createObject('value', 'StorageV2'))]",
+                  "largeFileSharesState": "[if(or(equals(parameters('storageSku'), 'Standard_LRS'), equals(parameters('storageSku'), 'Standard_ZRS')), createObject('value', 'Enabled'), createObject('value', 'Disabled'))]",
                   "azureFilesIdentityBasedAuthentication": {
                     "value": {
                       "directoryServiceOptions": "[variables('varDirectoryServiceOptions')]",
@@ -44495,14 +44504,7 @@
                   "scriptArguments": {
                     "value": "[variables('varStorageToDomainScriptArgs')]"
                   },
-                  "domainJoinUserPassword": {
-                    "reference": {
-                      "keyVault": {
-                        "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('workloadSubsId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.KeyVault/vaults', parameters('wrklKvName'))]"
-                      },
-                      "secretName": "domainJoinUserPassword"
-                    }
-                  },
+                  "adminUserPassword": "[if(equals(parameters('identityServiceProvider'), 'AAD'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('workloadSubsId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.KeyVault/vaults', parameters('wrklKvName'))), 'secretName', 'vmLocalUserPassword')), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('workloadSubsId')), format('{0}', parameters('serviceObjectsRgName'))), 'Microsoft.KeyVault/vaults', parameters('wrklKvName'))), 'secretName', 'domainJoinUserPassword')))]",
                   "baseScriptUri": {
                     "value": "[parameters('storageToDomainScriptUri')]"
                   }
@@ -44514,7 +44516,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "16297322434069639917"
+                      "templateHash": "4048736729822728060"
                     }
                   },
                   "parameters": {
@@ -44545,15 +44547,12 @@
                         "description": "Arguments for domain join script."
                       }
                     },
-                    "domainJoinUserPassword": {
+                    "adminUserPassword": {
                       "type": "securestring",
                       "metadata": {
                         "description": "Domain join user password."
                       }
                     }
-                  },
-                  "variables": {
-                    "varscriptArgumentsWithPassword": "[format('{0} -DomainAdminUserPassword {1} -verbose', parameters('scriptArguments'), parameters('domainJoinUserPassword'))]"
                   },
                   "resources": [
                     {
@@ -44569,7 +44568,7 @@
                         "settings": {},
                         "protectedSettings": {
                           "fileUris": "[array(parameters('baseScriptUri'))]",
-                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File {0} {1}', parameters('file'), variables('varscriptArgumentsWithPassword'))]"
+                          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File {0} {1} -AdminUserPassword {2} -verbose', parameters('file'), parameters('scriptArguments'), parameters('adminUserPassword'))]"
                         }
                       }
                     }
@@ -45178,7 +45177,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "14086253950155708433"
+              "templateHash": "6078602552923195855"
             }
           },
           "parameters": {
@@ -45475,7 +45474,6 @@
                   "timeZone": {
                     "value": "[parameters('timeZone')]"
                   },
-                  "userAssignedIdentities": "[if(parameters('createAvdFslogixDeployment'), createObject('value', createObject(format('{0}', parameters('storageManagedIdentityResourceId')), createObject())), createObject('value', createObject()))]",
                   "systemAssignedIdentity": "[if(equals(parameters('identityServiceProvider'), 'AAD'), createObject('value', true()), createObject('value', false()))]",
                   "availabilityZone": "[if(parameters('useAvailabilityZones'), createObject('value', take(skip(variables('varAllAvailabilityZones'), mod(range(1, parameters('count'))[copyIndex()], length(variables('varAllAvailabilityZones')))), 1)), createObject('value', createArray()))]",
                   "encryptionAtHost": {
@@ -45540,7 +45538,7 @@
                   },
                   "extensionDomainJoinConfig": {
                     "value": {
-                      "enabled": "[if(equals(parameters('identityServiceProvider'), 'AAD'), false(), true())]",
+                      "enabled": "[if(or(equals(parameters('identityServiceProvider'), 'AADDS'), equals(parameters('identityServiceProvider'), 'ADDS')), true(), false())]",
                       "settings": {
                         "name": "[parameters('identityDomainName')]",
                         "ouPath": "[if(not(empty(parameters('sessionHostOuPath'))), parameters('sessionHostOuPath'), null())]",
@@ -50291,7 +50289,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.23.1.45101",
-                      "templateHash": "16467384531279284955"
+                      "templateHash": "4753285980306081600"
                     }
                   },
                   "parameters": {
@@ -50363,7 +50361,7 @@
                     }
                   },
                   "variables": {
-                    "varScriptArguments": "[format('-IdentityDomainName {0} -AmdVmSize {1} -IdentityServiceProvider {2} -Fslogix {3} -FslogixFileShare {4} -FslogixStorageFqdn {5} -HostPoolRegistrationToken {6} -NvidiaVmSize {7} -verbose', parameters('identityDomainName'), variables('varAmdVmSize'), parameters('identityServiceProvider'), parameters('fslogix'), parameters('fslogixFileShare'), parameters('fslogixStorageFqdn'), parameters('hostPoolToken'), variables('varNvidiaVmSize'))]",
+                    "varScriptArguments": "[if(parameters('fslogix'), format('-IdentityDomainName {0} -AmdVmSize {1} -IdentityServiceProvider {2} -Fslogix {3} -FslogixFileShare {4} -FslogixStorageFqdn {5} -HostPoolRegistrationToken {6} -NvidiaVmSize {7} -verbose', parameters('identityDomainName'), variables('varAmdVmSize'), parameters('identityServiceProvider'), parameters('fslogix'), parameters('fslogixFileShare'), parameters('fslogixStorageFqdn'), parameters('hostPoolToken'), variables('varNvidiaVmSize')), format('-AmdVmSize {0} -IdentityServiceProvider {1} -Fslogix {2} -HostPoolRegistrationToken {3} -NvidiaVmSize {4} -verbose', variables('varAmdVmSize'), parameters('identityServiceProvider'), parameters('fslogix'), parameters('hostPoolToken'), variables('varNvidiaVmSize')))]",
                     "varAmdVmSizes": [
                       "Standard_NV4as_v4",
                       "Standard_NV8as_v4",
