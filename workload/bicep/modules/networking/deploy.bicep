@@ -843,6 +843,26 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
                     }
                     {
                         ruleType: 'NetworkRule'
+                        name: 'GitHub'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'github.com'
+                            'raw.githubusercontent.com'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
                         name: 'AzureFileStorage'
                         ipProtocols: [
                             'TCP'
