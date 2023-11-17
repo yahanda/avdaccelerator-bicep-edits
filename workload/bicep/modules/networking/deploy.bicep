@@ -508,6 +508,8 @@ module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicie
 }
 
 // Firewall policy rule collection group
+// https://learn.microsoft.com/azure/firewall/protect-azure-virtual-desktop
+// https://learn.microsoft.com/azure/virtual-desktop/safe-url-list
 module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/ruleCollectionGroups/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Policy-Rcg-${time}'
@@ -777,6 +779,82 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
                         destinationIpGroups: []
                         destinationFqdns: [
                             'www.msftconnecttest.com'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'AzureInstanceMetadataServiceEndpoint'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: [
+                            '169.254.169.254'
+                        ]
+                        destinationIpGroups: []
+                        destinationFqdns: []
+                        destinationPorts: [
+                            '80'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'SessionHostHealthMonitoring'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: [
+                            '168.63.129.16'
+                        ]
+                        destinationIpGroups: []
+                        destinationFqdns: []
+                        destinationPorts: [
+                            '80'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'AgentTraffic'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'gcs.prod.monitoring.core.windows.net'
+                        ]
+                        destinationPorts: [
+                            '443'
+                        ]
+                    }
+                    {
+                        ruleType: 'NetworkRule'
+                        name: 'AzureFileStorage'
+                        ipProtocols: [
+                            'TCP'
+                        ]
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        sourceIpGroups: []
+                        destinationAddresses: []
+                        destinationIpGroups: []
+                        destinationFqdns: [
+                            'file.core.windows.net'
                         ]
                         destinationPorts: [
                             '443'

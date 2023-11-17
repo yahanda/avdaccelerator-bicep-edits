@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "779543941352442851"
+      "templateHash": "2778860648847566569"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -8110,7 +8110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "7522148216674431877"
+              "templateHash": "2983649306522981053"
             }
           },
           "parameters": {
@@ -14794,6 +14794,82 @@
                             "destinationIpGroups": [],
                             "destinationFqdns": [
                               "www.msftconnecttest.com"
+                            ],
+                            "destinationPorts": [
+                              "443"
+                            ]
+                          },
+                          {
+                            "ruleType": "NetworkRule",
+                            "name": "AzureInstanceMetadataServiceEndpoint",
+                            "ipProtocols": [
+                              "TCP"
+                            ],
+                            "sourceAddresses": [
+                              "[parameters('vnetAvdSubnetAddressPrefix')]"
+                            ],
+                            "sourceIpGroups": [],
+                            "destinationAddresses": [
+                              "169.254.169.254"
+                            ],
+                            "destinationIpGroups": [],
+                            "destinationFqdns": [],
+                            "destinationPorts": [
+                              "80"
+                            ]
+                          },
+                          {
+                            "ruleType": "NetworkRule",
+                            "name": "SessionHostHealthMonitoring",
+                            "ipProtocols": [
+                              "TCP"
+                            ],
+                            "sourceAddresses": [
+                              "[parameters('vnetAvdSubnetAddressPrefix')]"
+                            ],
+                            "sourceIpGroups": [],
+                            "destinationAddresses": [
+                              "168.63.129.16"
+                            ],
+                            "destinationIpGroups": [],
+                            "destinationFqdns": [],
+                            "destinationPorts": [
+                              "80"
+                            ]
+                          },
+                          {
+                            "ruleType": "NetworkRule",
+                            "name": "AgentTraffic",
+                            "ipProtocols": [
+                              "TCP"
+                            ],
+                            "sourceAddresses": [
+                              "[parameters('vnetAvdSubnetAddressPrefix')]"
+                            ],
+                            "sourceIpGroups": [],
+                            "destinationAddresses": [],
+                            "destinationIpGroups": [],
+                            "destinationFqdns": [
+                              "gcs.prod.monitoring.core.windows.net"
+                            ],
+                            "destinationPorts": [
+                              "443"
+                            ]
+                          },
+                          {
+                            "ruleType": "NetworkRule",
+                            "name": "AzureFileStorage",
+                            "ipProtocols": [
+                              "TCP"
+                            ],
+                            "sourceAddresses": [
+                              "[parameters('vnetAvdSubnetAddressPrefix')]"
+                            ],
+                            "sourceIpGroups": [],
+                            "destinationAddresses": [],
+                            "destinationIpGroups": [],
+                            "destinationFqdns": [
+                              "file.core.windows.net"
                             ],
                             "destinationPorts": [
                               "443"
