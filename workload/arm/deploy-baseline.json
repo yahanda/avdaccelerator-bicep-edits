@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "13094907018285523315"
+      "templateHash": "3684202385086406686"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -8110,7 +8110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "6455745274277470494"
+              "templateHash": "7212900989514738341"
             }
           },
           "parameters": {
@@ -14420,13 +14420,13 @@
                     "value": "[parameters('firewallPolicyName')]"
                   },
                   "priority": {
-                    "value": 100
+                    "value": 1000
                   },
                   "ruleCollections": {
                     "value": [
                       {
                         "name": "[parameters('firewallPolicyNetworkRuleCollectionName')]",
-                        "priority": 100,
+                        "priority": 1100,
                         "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
                         "action": {
                           "type": "Allow"
@@ -14730,13 +14730,13 @@
                     "value": "[parameters('firewallPolicyName')]"
                   },
                   "priority": {
-                    "value": 200
+                    "value": 2000
                   },
                   "ruleCollections": {
                     "value": [
                       {
                         "name": "[parameters('firewallPolicyOptionalNetworkRuleCollectionName')]",
-                        "priority": 100,
+                        "priority": 2100,
                         "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
                         "action": {
                           "type": "Allow"
@@ -14878,7 +14878,7 @@
                           },
                           {
                             "ruleType": "NetworkRule",
-                            "name": "AzureFileStorage",
+                            "name": "AzureStorage",
                             "ipProtocols": [
                               "TCP"
                             ],
@@ -14886,11 +14886,11 @@
                               "[parameters('vnetAvdSubnetAddressPrefix')]"
                             ],
                             "sourceIpGroups": [],
-                            "destinationAddresses": [],
-                            "destinationIpGroups": [],
-                            "destinationFqdns": [
-                              "file.core.windows.net"
+                            "destinationAddresses": [
+                              "Storage"
                             ],
+                            "destinationIpGroups": [],
+                            "destinationFqdns": [],
                             "destinationPorts": [
                               "443"
                             ]
@@ -14899,7 +14899,7 @@
                       },
                       {
                         "name": "[parameters('firewallPolicyOptionalApplicationRuleCollectionName')]",
-                        "priority": 200,
+                        "priority": 2200,
                         "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
                         "action": {
                           "type": "Allow"
@@ -15013,6 +15013,59 @@
                             "targetFqdns": [
                               "*.azure-dns.com",
                               "*.azure-dns.net"
+                            ],
+                            "targetUrls": [],
+                            "terminateTLS": false,
+                            "sourceAddresses": [
+                              "[parameters('vnetAvdSubnetAddressPrefix')]"
+                            ],
+                            "destinationAddresses": [],
+                            "sourceIpGroups": [],
+                            "httpHeadersToInsert": []
+                          },
+                          {
+                            "ruleType": "ApplicationRule",
+                            "name": "PowerShellGallery",
+                            "protocols": [
+                              {
+                                "protocolType": "Https",
+                                "port": 443
+                              }
+                            ],
+                            "fqdnTags": [],
+                            "webCategories": [],
+                            "targetFqdns": [
+                              "go.microsoft.com",
+                              "onegetcdn.azureedge.net"
+                            ],
+                            "targetUrls": [],
+                            "terminateTLS": false,
+                            "sourceAddresses": [
+                              "[parameters('vnetAvdSubnetAddressPrefix')]"
+                            ],
+                            "destinationAddresses": [],
+                            "sourceIpGroups": [],
+                            "httpHeadersToInsert": []
+                          },
+                          {
+                            "ruleType": "ApplicationRule",
+                            "name": "AzurePowerShell",
+                            "protocols": [
+                              {
+                                "protocolType": "Https",
+                                "port": 443
+                              }
+                            ],
+                            "fqdnTags": [],
+                            "webCategories": [],
+                            "targetFqdns": [
+                              "login.microsoftonline.com",
+                              "login.live.com",
+                              "management.azure.com",
+                              "directory.services.live.com",
+                              "management.core.windows.net",
+                              "provisioningapi.microsoftonline.com",
+                              "graph.windows.net"
                             ],
                             "targetUrls": [],
                             "terminateTLS": false,

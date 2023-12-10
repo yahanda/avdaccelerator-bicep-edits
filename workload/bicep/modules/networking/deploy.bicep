@@ -516,11 +516,11 @@ module firewallPolicyRuleCollectionGroup '../../../../carml/1.3.0/Microsoft.Netw
     params: {
         name: firewallPolicyRuleCollectionGroupName
         firewallPolicyName: firewallPolicyName
-        priority: 100
+        priority: 1000
         ruleCollections: [
             {
                 name: firewallPolicyNetworkRuleCollectionName
-                priority: 100
+                priority: 1100
                 ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
                 action: {
                     type: 'Allow'
@@ -717,11 +717,11 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
     params: {
         name: firewallPolicyOptionalRuleCollectionGroupName
         firewallPolicyName: firewallPolicyName
-        priority: 200
+        priority: 2000
         ruleCollections: [
             {
                 name: firewallPolicyOptionalNetworkRuleCollectionName
-                priority: 100
+                priority: 2100
                 ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
                 action: {
                     type: 'Allow'
@@ -863,7 +863,7 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
                     }
                     {
                         ruleType: 'NetworkRule'
-                        name: 'AzureFileStorage'
+                        name: 'AzureStorage'
                         ipProtocols: [
                             'TCP'
                         ]
@@ -871,11 +871,11 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
                             vnetAvdSubnetAddressPrefix
                         ]
                         sourceIpGroups: []
-                        destinationAddresses: []
-                        destinationIpGroups: []
-                        destinationFqdns: [
-                            'file.core.windows.net'
+                        destinationAddresses: [
+                            'Storage'
                         ]
+                        destinationIpGroups: []
+                        destinationFqdns: []
                         destinationPorts: [
                             '443'
                         ]
@@ -884,7 +884,7 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
             }
             {
                 name: firewallPolicyOptionalApplicationRuleCollectionName
-                priority: 200
+                priority: 2200
                 ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
                 action: {
                     type: 'Allow'
@@ -998,6 +998,59 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
                         targetFqdns: [
                             '*.azure-dns.com'
                             '*.azure-dns.net'
+                        ]
+                        targetUrls: []
+                        terminateTLS: false
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        destinationAddresses: []
+                        sourceIpGroups: []
+                        httpHeadersToInsert: []
+                    }
+                    {
+                        ruleType: 'ApplicationRule'
+                        name: 'PowerShellGallery'
+                        protocols: [
+                            {
+                                protocolType: 'Https'
+                                port: 443
+                            }
+                        ]
+                        fqdnTags: []
+                        webCategories: []
+                        targetFqdns: [
+                            'go.microsoft.com'
+                            'onegetcdn.azureedge.net'
+                        ]
+                        targetUrls: []
+                        terminateTLS: false
+                        sourceAddresses: [
+                            vnetAvdSubnetAddressPrefix
+                        ]
+                        destinationAddresses: []
+                        sourceIpGroups: []
+                        httpHeadersToInsert: []
+                    }
+                    {
+                        ruleType: 'ApplicationRule'
+                        name: 'AzurePowerShell'
+                        protocols: [
+                            {
+                                protocolType: 'Https'
+                                port: 443
+                            }
+                        ]
+                        fqdnTags: []
+                        webCategories: []
+                        targetFqdns: [
+                            'login.microsoftonline.com'
+                            'login.live.com'
+                            'management.azure.com'
+                            'directory.services.live.com'
+                            'management.core.windows.net'
+                            'provisioningapi.microsoftonline.com'
+                            'graph.windows.net'
                         ]
                         targetUrls: []
                         terminateTLS: false
