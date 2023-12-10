@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "3684202385086406686"
+      "templateHash": "11894936974634827666"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -8110,7 +8110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "7212900989514738341"
+              "templateHash": "2431612964863944033"
             }
           },
           "parameters": {
@@ -15065,7 +15065,8 @@
                               "directory.services.live.com",
                               "management.core.windows.net",
                               "provisioningapi.microsoftonline.com",
-                              "graph.windows.net"
+                              "graph.windows.net",
+                              "query.prod.cms.rt.microsoft.com"
                             ],
                             "targetUrls": [],
                             "terminateTLS": false,

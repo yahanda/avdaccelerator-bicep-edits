@@ -1051,6 +1051,7 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
                             'management.core.windows.net'
                             'provisioningapi.microsoftonline.com'
                             'graph.windows.net'
+                            'query.prod.cms.rt.microsoft.com'
                         ]
                         targetUrls: []
                         terminateTLS: false
