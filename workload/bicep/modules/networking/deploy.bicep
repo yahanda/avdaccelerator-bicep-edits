@@ -342,7 +342,7 @@ module routeTablePrivateEndpoint '../../../../carml/1.3.0/Microsoft.Network/rout
     dependsOn: []
 }
 
-// Virtual network.
+// Virtual network
 module virtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/deploy.bicep' = if (createVnet) {
     scope: resourceGroup('${workloadSubsId}', '${networkObjectsRgName}')
     name: 'vNet-${time}'
@@ -351,7 +351,7 @@ module virtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks
         location: sessionHostLocation
         addressPrefixes: array(vnetAddressPrefixes)
         dnsServers: dnsServers
-        peerings: createVnetPeering ? [
+        peerings: createVnetPeering ? ((deployFirewall && !deployFirewallInHubVirtualNetwork) ? [
             {
                 remoteVirtualNetworkId: existingHubVnetResourceId
                 name: vnetPeeringName
@@ -368,7 +368,40 @@ module virtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks
                 remotePeeringDoNotVerifyRemoteGateways: true
                 remotePeeringUseRemoteGateways: false
             }
-        ] : []
+            {
+                remoteVirtualNetworkId: firewallVnetResourceId
+                name: firewallVnetPeeringName
+                allowForwardedTraffic: true
+                allowGatewayTransit: false
+                allowVirtualNetworkAccess: true
+                doNotVerifyRemoteGateways: true
+                useRemoteGateways: false
+                remotePeeringEnabled: true
+                remotePeeringName: firewallRemoteVnetPeeringName
+                remotePeeringAllowForwardedTraffic: true
+                remotePeeringAllowGatewayTransit: false
+                remotePeeringAllowVirtualNetworkAccess: true
+                remotePeeringDoNotVerifyRemoteGateways: true
+                remotePeeringUseRemoteGateways: false
+            }
+        ] : [
+            {
+                remoteVirtualNetworkId: existingHubVnetResourceId
+                name: vnetPeeringName
+                allowForwardedTraffic: true
+                allowGatewayTransit: false
+                allowVirtualNetworkAccess: true
+                doNotVerifyRemoteGateways: true
+                useRemoteGateways: vNetworkGatewayOnHub ? true : false
+                remotePeeringEnabled: true
+                remotePeeringName: remoteVnetPeeringName
+                remotePeeringAllowForwardedTraffic: true
+                remotePeeringAllowGatewayTransit: vNetworkGatewayOnHub ? true : false
+                remotePeeringAllowVirtualNetworkAccess: true
+                remotePeeringDoNotVerifyRemoteGateways: true
+                remotePeeringUseRemoteGateways: false
+            }
+        ]):[]
         subnets: deployPrivateEndpointSubnet ? [
             {
                 name: vnetAvdSubnetName
@@ -396,7 +429,6 @@ module virtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks
                 routeTableId: createVnet ? routeTableAvd.outputs.resourceId : ''
             }
         ]
-
         tags: tags
         diagnosticWorkspaceId: alaWorkspaceResourceId
         diagnosticLogCategoriesToEnable: varVirtualNetworkLogsDiagnostic
@@ -408,6 +440,35 @@ module virtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks
         routeTableAvd
         routeTablePrivateEndpoint
     ] : []
+}
+
+// Peering between existing AVD vNet and Firewall vNet
+module virtualNetworkExistingAvd '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/deploy.bicep' = if (!createVnet && deployFirewall) {
+    scope: resourceGroup('${varExistingAvdVnetSubId}', '${varExistingAvdVnetSubRgName}')
+    name: 'Existing-vNet-${time}'
+    params: {
+        name: varExistingAvdVnetName
+        location: sessionHostLocation
+        addressPrefixes: array(existingAvdVnetAddressPrefixes)
+        peerings: [
+            {
+                remoteVirtualNetworkId: firewallVnetResourceId
+                name: firewallVnetPeeringName
+                allowForwardedTraffic: true
+                allowGatewayTransit: false
+                allowVirtualNetworkAccess: true
+                doNotVerifyRemoteGateways: true
+                useRemoteGateways:  false
+                remotePeeringEnabled: true
+                remotePeeringName: firewallRemoteVnetPeeringName
+                remotePeeringAllowForwardedTraffic: true
+                remotePeeringAllowGatewayTransit: false 
+                remotePeeringAllowVirtualNetworkAccess: true
+                remotePeeringDoNotVerifyRemoteGateways: true
+                remotePeeringUseRemoteGateways: false
+            }
+        ]
+    }
 }
 
 // Private DNS zones Azure files commercial
@@ -454,59 +515,13 @@ module privateDnsZoneKeyVaultGov '.bicep/privateDnsZones.bicep' = if (createPriv
     }
 }
 
-// Firewall virtual network
-module firewallVirtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/deploy.bicep' = if (!deployFirewallInHubVirtualNetwork) {
-    scope: createVnet ? resourceGroup('${workloadSubsId}', '${networkObjectsRgName}') : resourceGroup('${varExistingAvdVnetSubId}', '${varExistingAvdVnetSubRgName}')
-    name: 'Fw-vNet-${time}'
-    params: {
-        name: createVnet ? vnetName : varExistingAvdVnetName
-        location: sessionHostLocation
-        addressPrefixes: createVnet ? array(vnetAddressPrefixes): array(existingAvdVnetAddressPrefixes)
-        dnsServers: dnsServers
-        peerings: createVnet ? [
-            {
-                remoteVirtualNetworkId: firewallVnetResourceId
-                name: vnetPeeringName
-                allowForwardedTraffic: true
-                allowGatewayTransit: false
-                allowVirtualNetworkAccess: true
-                doNotVerifyRemoteGateways: true
-                useRemoteGateways: vNetworkGatewayOnHub ? true : false
-                remotePeeringEnabled: true
-                remotePeeringName: remoteVnetPeeringName
-                remotePeeringAllowForwardedTraffic: true
-                remotePeeringAllowGatewayTransit: vNetworkGatewayOnHub ? true : false
-                remotePeeringAllowVirtualNetworkAccess: true
-                remotePeeringDoNotVerifyRemoteGateways: true
-                remotePeeringUseRemoteGateways: false
-            }
-        ] : [
-            {
-                remoteVirtualNetworkId: firewallVnetResourceId
-                name: firewallVnetPeeringName
-                allowForwardedTraffic: true
-                allowGatewayTransit: false
-                allowVirtualNetworkAccess: true
-                doNotVerifyRemoteGateways: true
-                useRemoteGateways:  false
-                remotePeeringEnabled: true
-                remotePeeringName: firewallRemoteVnetPeeringName
-                remotePeeringAllowForwardedTraffic: true
-                remotePeeringAllowGatewayTransit: false 
-                remotePeeringAllowVirtualNetworkAccess: true
-                remotePeeringDoNotVerifyRemoteGateways: true
-                remotePeeringUseRemoteGateways: false
-            }
-        ]
-    }
-}
-
 // Firewall policy
 module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicies/deploy.bicep' = if (deployFirewall) {
     scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Policy-${time}'
     params: {
         name: firewallPolicyName
+        location: firewallLocation
         enableProxy: true
     }
 }
