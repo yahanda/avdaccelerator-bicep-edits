@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "15588700170601581977"
+      "templateHash": "4800065811924661468"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -333,18 +333,11 @@
         "description": "Create Azure Firewall and Azure Firewall Policy in hub virtual network. (Default: false)"
       }
     },
-    "firewallVnetResourceId": {
+    "firewallVnetLocationAndResourceId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
         "description": "Azure firewall virtual network. (Default: \"\")"
-      }
-    },
-    "firewallVnetLocation": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Azure firewall virtual network location. (Default: \"\")"
       }
     },
     "firewallSubnetAddressPrefix": {
@@ -1265,7 +1258,9 @@
     "varAvdRouteTableName": "[if(parameters('avdUseCustomNaming'), parameters('avdRouteTableCustomName'), format('route-avd-{0}-001', variables('varComputeStorageResourcesNamingStandard')))]",
     "varPrivateEndpointRouteTableName": "[if(parameters('avdUseCustomNaming'), parameters('privateEndpointRouteTableCustomName'), format('route-pe-{0}-001', variables('varComputeStorageResourcesNamingStandard')))]",
     "varApplicationSecurityGroupName": "[if(parameters('avdUseCustomNaming'), parameters('avdApplicationSecurityGroupCustomName'), format('asg-{0}-001', variables('varComputeStorageResourcesNamingStandard')))]",
-    "varFirewallVnetName": "[if(parameters('deployFirewall'), split(parameters('firewallVnetResourceId'), '/')[8], '')]",
+    "varFirewallVnetLocation": "[if(parameters('deployFirewall'), split(parameters('firewallVnetLocationAndResourceId'), '.')[0], '')]",
+    "varFirewallVnetResourceId": "[if(parameters('deployFirewall'), split(parameters('firewallVnetLocationAndResourceId'), '.')[1], '')]",
+    "varFirewallVnetName": "[if(parameters('deployFirewall'), split(variables('varFirewallVnetResourceId'), '/')[8], '')]",
     "varFirewallVnetPeeringName": "[format('peer-{0}', variables('varFirewallVnetName'))]",
     "varFirewallRemoteVnetPeeringName": "[if(parameters('createAvdVnet'), format('peer-{0}', variables('varVnetName')), format('peer-{0}', split(parameters('existingVnetAvdSubnetResourceId'), '/')[8]))]",
     "varFiwewallName": "[format('fw-avd-{0}', variables('varFirewallVnetName'))]",
@@ -8077,10 +8072,10 @@
             "value": "[parameters('deployFirewallInHubVirtualNetwork')]"
           },
           "firewallVnetResourceId": {
-            "value": "[parameters('firewallVnetResourceId')]"
+            "value": "[variables('varFirewallVnetResourceId')]"
           },
           "firewallVnetLocation": {
-            "value": "[parameters('firewallVnetLocation')]"
+            "value": "[variables('varFirewallVnetLocation')]"
           },
           "firewallVnetPeeringName": {
             "value": "[variables('varFirewallVnetPeeringName')]"
