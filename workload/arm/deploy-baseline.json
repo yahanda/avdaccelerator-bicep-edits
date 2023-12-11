@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "11894936974634827666"
+      "templateHash": "3391049251614086580"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -8110,7 +8110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "2431612964863944033"
+              "templateHash": "11136799972914430537"
             }
           },
           "parameters": {
@@ -8233,6 +8233,13 @@
               "type": "bool",
               "metadata": {
                 "description": "Create firewall and firewall Policy to hub virtual network."
+              }
+            },
+            "firewallLocation": {
+              "type": "string",
+              "defaultValue": "[deployment().location]",
+              "metadata": {
+                "description": "Location where to deploy firewall."
               }
             },
             "firewallVnetResourceId": {
@@ -15601,6 +15608,9 @@
                 "parameters": {
                   "name": {
                     "value": "[parameters('firewallName')]"
+                  },
+                  "location": {
+                    "value": "[parameters('firewallLocation')]"
                   },
                   "vNetId": {
                     "value": "[parameters('firewallVnetResourceId')]"

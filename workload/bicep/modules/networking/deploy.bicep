@@ -63,6 +63,9 @@ param deployFirewall bool
 @sys.description('Create firewall and firewall Policy to hub virtual network.')
 param deployFirewallInHubVirtualNetwork bool
 
+@sys.description('Location where to deploy firewall.')
+param firewallLocation string = deployment().location
+
 @sys.description('Firewall virtual network')
 param firewallVnetResourceId string
 
@@ -1088,6 +1091,7 @@ module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/d
     name: 'Fw-${time}'
     params: {
         name: firewallName
+        location: firewallLocation
         vNetId: firewallVnetResourceId
         firewallPolicyId: firewallPolicy.outputs.resourceId
     }
