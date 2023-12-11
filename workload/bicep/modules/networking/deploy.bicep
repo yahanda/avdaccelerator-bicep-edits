@@ -462,6 +462,7 @@ module firewallVirtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtual
         name: createVnet ? vnetName : varExistingAvdVnetName
         location: sessionHostLocation
         addressPrefixes: createVnet ? array(vnetAddressPrefixes): array(existingAvdVnetAddressPrefixes)
+        dnsServers: dnsServers
         peerings: createVnet ? [
             {
                 remoteVirtualNetworkId: firewallVnetResourceId
@@ -487,11 +488,11 @@ module firewallVirtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtual
                 allowGatewayTransit: false
                 allowVirtualNetworkAccess: true
                 doNotVerifyRemoteGateways: true
-                useRemoteGateways:  true
+                useRemoteGateways:  false
                 remotePeeringEnabled: true
                 remotePeeringName: firewallRemoteVnetPeeringName
                 remotePeeringAllowForwardedTraffic: true
-                remotePeeringAllowGatewayTransit: true 
+                remotePeeringAllowGatewayTransit: false 
                 remotePeeringAllowVirtualNetworkAccess: true
                 remotePeeringDoNotVerifyRemoteGateways: true
                 remotePeeringUseRemoteGateways: false

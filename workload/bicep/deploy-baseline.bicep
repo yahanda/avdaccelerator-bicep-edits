@@ -31,6 +31,9 @@ param avdSessionHostLocation string = 'eastus2'
 @sys.description('Location where to deploy AVD management plane. (Default: eastus2)')
 param avdManagementPlaneLocation string = 'eastus2'
 
+@sys.description('Location where to deploy Firewall. (Default: eastus2)')
+param firewallLocation string = 'eastus2'
+
 @sys.description('AVD workload subscription ID, multiple subscriptions scenario. (Default: "")')
 param avdWorkloadSubsId string = ''
 
@@ -952,6 +955,7 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
         deployFirewall: deployFirewall
         deployFirewallInHubVirtualNetwork: deployFirewallInHubVirtualNetwork
+        firewallLocation: firewallLocation
         firewallVnetResourceId: firewallVnetResourceId
         firewallVnetPeeringName: varFirewallVnetPeeringName
         firewallRemoteVnetPeeringName: varFirewallRemoteVnetPeeringName

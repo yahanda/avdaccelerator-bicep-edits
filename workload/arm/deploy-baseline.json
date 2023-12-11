@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "3391049251614086580"
+      "templateHash": "16459301773560512581"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -53,6 +53,13 @@
       "defaultValue": "eastus2",
       "metadata": {
         "description": "Location where to deploy AVD management plane. (Default: eastus2)"
+      }
+    },
+    "firewallLocation": {
+      "type": "string",
+      "defaultValue": "eastus2",
+      "metadata": {
+        "description": "Location where to deploy Firewall. (Default: eastus2)"
       }
     },
     "avdWorkloadSubsId": {
@@ -8069,6 +8076,9 @@
           "deployFirewallInHubVirtualNetwork": {
             "value": "[parameters('deployFirewallInHubVirtualNetwork')]"
           },
+          "firewallLocation": {
+            "value": "[parameters('firewallLocation')]"
+          },
           "firewallVnetResourceId": {
             "value": "[parameters('firewallVnetResourceId')]"
           },
@@ -8110,7 +8120,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "11136799972914430537"
+              "templateHash": "2958368092249918004"
             }
           },
           "parameters": {
@@ -12676,7 +12686,10 @@
                     "value": "[parameters('sessionHostLocation')]"
                   },
                   "addressPrefixes": "[if(parameters('createVnet'), createObject('value', array(parameters('vnetAddressPrefixes'))), createObject('value', array(parameters('existingAvdVnetAddressPrefixes'))))]",
-                  "peerings": "[if(parameters('createVnet'), createObject('value', createArray(createObject('remoteVirtualNetworkId', parameters('firewallVnetResourceId'), 'name', parameters('vnetPeeringName'), 'allowForwardedTraffic', true(), 'allowGatewayTransit', false(), 'allowVirtualNetworkAccess', true(), 'doNotVerifyRemoteGateways', true(), 'useRemoteGateways', if(parameters('vNetworkGatewayOnHub'), true(), false()), 'remotePeeringEnabled', true(), 'remotePeeringName', parameters('remoteVnetPeeringName'), 'remotePeeringAllowForwardedTraffic', true(), 'remotePeeringAllowGatewayTransit', if(parameters('vNetworkGatewayOnHub'), true(), false()), 'remotePeeringAllowVirtualNetworkAccess', true(), 'remotePeeringDoNotVerifyRemoteGateways', true(), 'remotePeeringUseRemoteGateways', false()))), createObject('value', createArray(createObject('remoteVirtualNetworkId', parameters('firewallVnetResourceId'), 'name', parameters('firewallVnetPeeringName'), 'allowForwardedTraffic', true(), 'allowGatewayTransit', false(), 'allowVirtualNetworkAccess', true(), 'doNotVerifyRemoteGateways', true(), 'useRemoteGateways', true(), 'remotePeeringEnabled', true(), 'remotePeeringName', parameters('firewallRemoteVnetPeeringName'), 'remotePeeringAllowForwardedTraffic', true(), 'remotePeeringAllowGatewayTransit', true(), 'remotePeeringAllowVirtualNetworkAccess', true(), 'remotePeeringDoNotVerifyRemoteGateways', true(), 'remotePeeringUseRemoteGateways', false()))))]"
+                  "dnsServers": {
+                    "value": "[parameters('dnsServers')]"
+                  },
+                  "peerings": "[if(parameters('createVnet'), createObject('value', createArray(createObject('remoteVirtualNetworkId', parameters('firewallVnetResourceId'), 'name', parameters('vnetPeeringName'), 'allowForwardedTraffic', true(), 'allowGatewayTransit', false(), 'allowVirtualNetworkAccess', true(), 'doNotVerifyRemoteGateways', true(), 'useRemoteGateways', if(parameters('vNetworkGatewayOnHub'), true(), false()), 'remotePeeringEnabled', true(), 'remotePeeringName', parameters('remoteVnetPeeringName'), 'remotePeeringAllowForwardedTraffic', true(), 'remotePeeringAllowGatewayTransit', if(parameters('vNetworkGatewayOnHub'), true(), false()), 'remotePeeringAllowVirtualNetworkAccess', true(), 'remotePeeringDoNotVerifyRemoteGateways', true(), 'remotePeeringUseRemoteGateways', false()))), createObject('value', createArray(createObject('remoteVirtualNetworkId', parameters('firewallVnetResourceId'), 'name', parameters('firewallVnetPeeringName'), 'allowForwardedTraffic', true(), 'allowGatewayTransit', false(), 'allowVirtualNetworkAccess', true(), 'doNotVerifyRemoteGateways', true(), 'useRemoteGateways', false(), 'remotePeeringEnabled', true(), 'remotePeeringName', parameters('firewallRemoteVnetPeeringName'), 'remotePeeringAllowForwardedTraffic', true(), 'remotePeeringAllowGatewayTransit', false(), 'remotePeeringAllowVirtualNetworkAccess', true(), 'remotePeeringDoNotVerifyRemoteGateways', true(), 'remotePeeringUseRemoteGateways', false()))))]"
                 },
                 "template": {
                   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
