@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "16835231226766718476"
+      "templateHash": "9750479323496588530"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -342,9 +342,9 @@
     },
     "firewallVnetLocation": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "eastus2",
       "metadata": {
-        "description": "Azure firewall virtual network location. (Default: \"\")"
+        "description": "Azure firewall virtual network location. (Default: eastus2)"
       }
     },
     "firewallSubnetAddressPrefix": {
