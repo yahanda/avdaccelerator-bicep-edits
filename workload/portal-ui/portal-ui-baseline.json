@@ -2475,6 +2475,7 @@
                 "deployFirewall": "[steps('network').firewallOptions.deployFirewall]",
                 "deployFirewallInHubVirtualNetwork": "[steps('network').firewallOptions.deployFirewallInHubVirtualNetwork]",
                 "firewallVnetResourceId": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork, steps('network').firewallOptions.firewallVirtualNetwork)]",
+                "firewallVnetLocation": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork.location, steps('network').firewallOptions.firewallVirtualNetwork.location)]",
                 "firewallSubnetAddressPrefix": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').firewallOptions.firewallSubnetSizeInHubVirtualNetwork, steps('network').firewallOptions.firewallSubnetSize)]",
                 "avdDeploySessionHosts": "[steps('sessionHosts').deploySessionHosts]",
                 "avdStartVmOnConnect": "[if(equals(steps('managementPlane').managementPlaneHostPoolSettings.hostPoolType, 'Personal'), steps('managementPlane').managementPlaneHostPoolScaling.startVmOnConnect, false)]",

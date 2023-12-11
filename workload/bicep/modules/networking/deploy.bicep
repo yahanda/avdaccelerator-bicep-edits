@@ -63,11 +63,11 @@ param deployFirewall bool
 @sys.description('Create firewall and firewall Policy to hub virtual network.')
 param deployFirewallInHubVirtualNetwork bool
 
-@sys.description('Location where to deploy firewall.')
-param firewallLocation string = deployment().location
-
 @sys.description('Firewall virtual network')
 param firewallVnetResourceId string
+
+@sys.description('Firewall virtual network location')
+param firewallVnetLocation string
 
 @sys.description('VNet peering name for AVD VNet to Firewall VNet.')
 param firewallVnetPeeringName string
@@ -162,6 +162,7 @@ var varExistingAvdVnetResourceId = !createVnet ? '/subscriptions/${varExistingAv
 var varFirewallSubId = split(firewallVnetResourceId, '/')[2]
 var varFirewallSubRgName = split(firewallVnetResourceId, '/')[4]
 var varFirewallVnetName = split(firewallVnetResourceId, '/')[8]
+
 // =========== //
 // Deployments //
 // =========== //
@@ -521,7 +522,7 @@ module firewallPolicy '../../../../carml/1.3.0/Microsoft.Network/firewallPolicie
     name: 'Fw-Policy-${time}'
     params: {
         name: firewallPolicyName
-        location: firewallLocation
+        location: firewallVnetLocation
         enableProxy: true
     }
 }
@@ -1107,7 +1108,7 @@ module azureFirewall '../../../../carml/1.3.0/Microsoft.Network/azureFirewalls/d
     name: 'Fw-${time}'
     params: {
         name: firewallName
-        location: firewallLocation
+        location: firewallVnetLocation
         vNetId: firewallVnetResourceId
         firewallPolicyId: firewallPolicy.outputs.resourceId
     }

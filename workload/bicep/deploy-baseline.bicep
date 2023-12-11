@@ -31,9 +31,6 @@ param avdSessionHostLocation string = 'eastus2'
 @sys.description('Location where to deploy AVD management plane. (Default: eastus2)')
 param avdManagementPlaneLocation string = 'eastus2'
 
-@sys.description('Location where to deploy Firewall. (Default: eastus2)')
-param firewallLocation string = 'eastus2'
-
 @sys.description('AVD workload subscription ID, multiple subscriptions scenario. (Default: "")')
 param avdWorkloadSubsId string = ''
 
@@ -170,6 +167,9 @@ param deployFirewallInHubVirtualNetwork bool = false
 
 @sys.description('Azure firewall virtual network. (Default: "")')
 param firewallVnetResourceId string = ''
+
+@sys.description('Azure firewall virtual network location. (Default: "")')
+param firewallVnetLocation string = ''
 
 @sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
 param firewallSubnetAddressPrefix string = '10.0.2.0/24'
@@ -955,8 +955,8 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
         deployFirewall: deployFirewall
         deployFirewallInHubVirtualNetwork: deployFirewallInHubVirtualNetwork
-        firewallLocation: firewallLocation
         firewallVnetResourceId: firewallVnetResourceId
+        firewallVnetLocation: firewallVnetLocation
         firewallVnetPeeringName: varFirewallVnetPeeringName
         firewallRemoteVnetPeeringName: varFirewallRemoteVnetPeeringName
         firewallName: varFiwewallName
