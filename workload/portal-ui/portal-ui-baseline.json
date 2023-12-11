@@ -1420,7 +1420,7 @@
                                     "filterPlaceholder": "Filter items ...",
                                     "multiLine": true,
                                     "constraints": {
-                                        "allowedValues": "[map(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetworks.value, (vnet) => parse(concat('{\"label\":\"', vnet.name, '\",\"description\":\"', vnet.location, '\",\"value\":\"', vnet.location, '.', toLower(vnet.id), '\"}')) )]",
+                                        "allowedValues": "[map(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetworks.value, (vnet) => parse(concat('{\"label\":\"', vnet.name, '\",\"description\":\"', vnet.location, '\",\"value\":\"', toLower(vnet.id), '\"}')) )]",
                                         "required": true
                                     }
                                 },
@@ -1540,7 +1540,7 @@
                                     "filterPlaceholder": "Filter items ...",
                                     "multiLine": true,
                                     "constraints": {
-                                        "allowedValues": "[map(steps('network').firewallOptions.firewallVirtualNetworks.value, (vnet) => parse(concat('{\"label\":\"', vnet.name, '\",\"description\":\"', vnet.location, '\",\"value\":\"', vnet.location, '.', toLower(vnet.id), '\"}')) )]",
+                                        "allowedValues": "[map(steps('network').firewallOptions.firewallVirtualNetworks.value, (vnet) => parse(concat('{\"label\":\"', vnet.name, '\",\"description\":\"', vnet.location, '\",\"value\":\"', toLower(vnet.id), '\"}')) )]",
                                         "required": true
                                     }
                                 },
@@ -2474,7 +2474,7 @@
                 "existingVnetPrivateEndpointSubnetResourceId": "[if(equals(steps('network').createAvdVirtualNetwork, false), steps('network').virtualNetworkPrivateEndpointSubnetSelectorName, 'no')]",
                 "deployFirewall": "[steps('network').firewallOptions.deployFirewall]",
                 "deployFirewallInHubVirtualNetwork": "[steps('network').firewallOptions.deployFirewallInHubVirtualNetwork]",
-                "firewallVnetLocationAndResourceId": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork, steps('network').firewallOptions.firewallVirtualNetwork)]",
+                "firewallVnetResourceId": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork, steps('network').firewallOptions.firewallVirtualNetwork)]",
                 "firewallSubnetAddressPrefix": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').firewallOptions.firewallSubnetSizeInHubVirtualNetwork, steps('network').firewallOptions.firewallSubnetSize)]",
                 "avdDeploySessionHosts": "[steps('sessionHosts').deploySessionHosts]",
                 "avdStartVmOnConnect": "[if(equals(steps('managementPlane').managementPlaneHostPoolSettings.hostPoolType, 'Personal'), steps('managementPlane').managementPlaneHostPoolScaling.startVmOnConnect, false)]",

@@ -67,7 +67,7 @@ param deployFirewallInHubVirtualNetwork bool
 param firewallVnetResourceId string
 
 @sys.description('Firewall virtual network location')
-param firewallVnetLocation string
+param firewallVnetLocation string = deployment().location
 
 @sys.description('VNet peering name for AVD VNet to Firewall VNet.')
 param firewallVnetPeeringName string

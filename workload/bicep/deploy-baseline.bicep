@@ -166,7 +166,10 @@ param deployFirewall bool = false
 param deployFirewallInHubVirtualNetwork bool = false
 
 @sys.description('Azure firewall virtual network. (Default: "")')
-param firewallVnetLocationAndResourceId string = ''
+param firewallVnetResourceId string = ''
+
+@sys.description('Azure firewall virtual network location. (Default: "")')
+param firewallVnetLocation string = ''
 
 @sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
 param firewallSubnetAddressPrefix string = '10.0.2.0/24'
@@ -524,9 +527,7 @@ var varPrivateEndpointNetworksecurityGroupName = avdUseCustomNaming ? privateEnd
 var varAvdRouteTableName = avdUseCustomNaming ? avdRouteTableCustomName : 'route-avd-${varComputeStorageResourcesNamingStandard}-001'
 var varPrivateEndpointRouteTableName = avdUseCustomNaming ? privateEndpointRouteTableCustomName : 'route-pe-${varComputeStorageResourcesNamingStandard}-001'
 var varApplicationSecurityGroupName = avdUseCustomNaming ? avdApplicationSecurityGroupCustomName : 'asg-${varComputeStorageResourcesNamingStandard}-001'
-var varFirewallVnetLocation = (deployFirewall) ? split(firewallVnetLocationAndResourceId, '.')[0] : ''
-var varFirewallVnetResourceId = (deployFirewall) ? split(firewallVnetLocationAndResourceId, '.')[1] : ''
-var varFirewallVnetName = (deployFirewall) ? split(varFirewallVnetResourceId, '/')[8] : ''
+var varFirewallVnetName = (deployFirewall) ? split(firewallVnetResourceId, '/')[8] : ''
 var varFirewallVnetPeeringName = 'peer-${varFirewallVnetName}'
 var varFirewallRemoteVnetPeeringName = (createAvdVnet) ? 'peer-${varVnetName}' : 'peer-${split(existingVnetAvdSubnetResourceId, '/')[8]}'
 var varFiwewallName = 'fw-avd-${varFirewallVnetName}'
@@ -954,8 +955,8 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         alaWorkspaceResourceId: avdDeployMonitoring ? (deployAlaWorkspace ? monitoringDiagnosticSettings.outputs.avdAlaWorkspaceResourceId : alaExistingWorkspaceResourceId) : ''
         deployFirewall: deployFirewall
         deployFirewallInHubVirtualNetwork: deployFirewallInHubVirtualNetwork
-        firewallVnetResourceId: varFirewallVnetResourceId
-        firewallVnetLocation: varFirewallVnetLocation
+        firewallVnetResourceId: firewallVnetResourceId
+        firewallVnetLocation: firewallVnetLocation
         firewallVnetPeeringName: varFirewallVnetPeeringName
         firewallRemoteVnetPeeringName: varFirewallRemoteVnetPeeringName
         firewallName: varFiwewallName
