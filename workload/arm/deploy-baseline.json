@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "14403764263679148105"
+      "templateHash": "15588700170601581977"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -53,13 +53,6 @@
       "defaultValue": "eastus2",
       "metadata": {
         "description": "Location where to deploy AVD management plane. (Default: eastus2)"
-      }
-    },
-    "firewallLocation": {
-      "type": "string",
-      "defaultValue": "eastus2",
-      "metadata": {
-        "description": "Location where to deploy Firewall. (Default: eastus2)"
       }
     },
     "avdWorkloadSubsId": {
@@ -345,6 +338,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "Azure firewall virtual network. (Default: \"\")"
+      }
+    },
+    "firewallVnetLocation": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Azure firewall virtual network location. (Default: \"\")"
       }
     },
     "firewallSubnetAddressPrefix": {
@@ -8076,11 +8076,11 @@
           "deployFirewallInHubVirtualNetwork": {
             "value": "[parameters('deployFirewallInHubVirtualNetwork')]"
           },
-          "firewallLocation": {
-            "value": "[parameters('firewallLocation')]"
-          },
           "firewallVnetResourceId": {
             "value": "[parameters('firewallVnetResourceId')]"
+          },
+          "firewallVnetLocation": {
+            "value": "[parameters('firewallVnetLocation')]"
           },
           "firewallVnetPeeringName": {
             "value": "[variables('varFirewallVnetPeeringName')]"
@@ -8120,7 +8120,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "1014014810749337316"
+              "templateHash": "17804418920818822466"
             }
           },
           "parameters": {
@@ -8245,17 +8245,16 @@
                 "description": "Create firewall and firewall Policy to hub virtual network."
               }
             },
-            "firewallLocation": {
-              "type": "string",
-              "defaultValue": "[deployment().location]",
-              "metadata": {
-                "description": "Location where to deploy firewall."
-              }
-            },
             "firewallVnetResourceId": {
               "type": "string",
               "metadata": {
                 "description": "Firewall virtual network"
+              }
+            },
+            "firewallVnetLocation": {
+              "type": "string",
+              "metadata": {
+                "description": "Firewall virtual network location"
               }
             },
             "firewallVnetPeeringName": {
@@ -14016,7 +14015,7 @@
                     "value": "[parameters('firewallPolicyName')]"
                   },
                   "location": {
-                    "value": "[parameters('firewallLocation')]"
+                    "value": "[parameters('firewallVnetLocation')]"
                   },
                   "enableProxy": {
                     "value": true
@@ -15647,7 +15646,7 @@
                     "value": "[parameters('firewallName')]"
                   },
                   "location": {
-                    "value": "[parameters('firewallLocation')]"
+                    "value": "[parameters('firewallVnetLocation')]"
                   },
                   "vNetId": {
                     "value": "[parameters('firewallVnetResourceId')]"
