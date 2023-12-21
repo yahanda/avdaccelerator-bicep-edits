@@ -168,9 +168,6 @@ param deployFirewallInHubVirtualNetwork bool = false
 @sys.description('Azure firewall virtual network. (Default: "")')
 param firewallVnetResourceId string = ''
 
-@sys.description('Azure firewall virtual network location. (Default: eastus2)')
-param firewallVnetLocation string = 'eastus2'
-
 @sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
 param firewallSubnetAddressPrefix string = '10.0.2.0/24'
 
@@ -956,7 +953,6 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         deployFirewall: deployFirewall
         deployFirewallInHubVirtualNetwork: deployFirewallInHubVirtualNetwork
         firewallVnetResourceId: firewallVnetResourceId
-        firewallVnetLocation: firewallVnetLocation
         firewallVnetPeeringName: varFirewallVnetPeeringName
         firewallRemoteVnetPeeringName: varFirewallRemoteVnetPeeringName
         firewallName: varFiwewallName

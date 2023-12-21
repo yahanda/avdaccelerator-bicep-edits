@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.23.1.45101",
-      "templateHash": "9750479323496588530"
+      "templateHash": "12448972630710590522"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -338,13 +338,6 @@
       "defaultValue": "",
       "metadata": {
         "description": "Azure firewall virtual network. (Default: \"\")"
-      }
-    },
-    "firewallVnetLocation": {
-      "type": "string",
-      "defaultValue": "eastus2",
-      "metadata": {
-        "description": "Azure firewall virtual network location. (Default: eastus2)"
       }
     },
     "firewallSubnetAddressPrefix": {
@@ -8079,9 +8072,6 @@
           "firewallVnetResourceId": {
             "value": "[parameters('firewallVnetResourceId')]"
           },
-          "firewallVnetLocation": {
-            "value": "[parameters('firewallVnetLocation')]"
-          },
           "firewallVnetPeeringName": {
             "value": "[variables('varFirewallVnetPeeringName')]"
           },
@@ -8120,7 +8110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.23.1.45101",
-              "templateHash": "15875264970848569045"
+              "templateHash": "13842355173990144132"
             }
           },
           "parameters": {
@@ -8249,13 +8239,6 @@
               "type": "string",
               "metadata": {
                 "description": "Firewall virtual network"
-              }
-            },
-            "firewallVnetLocation": {
-              "type": "string",
-              "defaultValue": "[deployment().location]",
-              "metadata": {
-                "description": "Firewall virtual network location"
               }
             },
             "firewallVnetPeeringName": {
@@ -14015,9 +13998,7 @@
                   "name": {
                     "value": "[parameters('firewallPolicyName')]"
                   },
-                  "location": {
-                    "value": "[parameters('firewallVnetLocation')]"
-                  },
+                  "location": "[if(not(parameters('createVnet')), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('varExistingAvdVnetSubRgName')), 'Microsoft.Network/virtualNetworks', variables('varExistingAvdVnetName')), '2020-06-01', 'full').location), createObject('value', deployment().location))]",
                   "enableProxy": {
                     "value": true
                   }
@@ -15646,9 +15627,7 @@
                   "name": {
                     "value": "[parameters('firewallName')]"
                   },
-                  "location": {
-                    "value": "[parameters('firewallVnetLocation')]"
-                  },
+                  "location": "[if(not(parameters('createVnet')), createObject('value', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('varExistingAvdVnetSubRgName')), 'Microsoft.Network/virtualNetworks', variables('varExistingAvdVnetName')), '2020-06-01', 'full').location), createObject('value', deployment().location))]",
                   "vNetId": {
                     "value": "[parameters('firewallVnetResourceId')]"
                   },
