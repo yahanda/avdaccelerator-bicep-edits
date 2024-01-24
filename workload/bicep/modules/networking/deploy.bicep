@@ -162,7 +162,7 @@ var varFirewallVnetName = split(firewallVnetResourceId, '/')[8]
 
 resource existingFirewallVnet 'Microsoft.Network/virtualNetworks@2020-06-01' existing = {
   scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
-  name: varFirewallVnetName
+  name: 'Existing-Fw-vNet'
 }
 var firewallVnetLocation = existingFirewallVnet.location
 
@@ -449,7 +449,7 @@ module virtualNetwork '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks
 // Peering between existing AVD vNet and Firewall vNet
 module virtualNetworkExistingAvd '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/deploy.bicep' = if (!createVnet && deployFirewall) {
     scope: resourceGroup('${varExistingAvdVnetSubId}', '${varExistingAvdVnetSubRgName}')
-    name: 'Existing-vNet-${time}'
+    name: 'Peering-Existing-vNet-${time}'
     params: {
         name: varExistingAvdVnetName
         location: sessionHostLocation
