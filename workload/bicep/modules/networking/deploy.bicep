@@ -162,7 +162,7 @@ var varFirewallVnetName = split(firewallVnetResourceId, '/')[8]
 
 resource existingFirewallVnet 'Microsoft.Network/virtualNetworks@2020-06-01' existing = {
   scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
-  name: 'Existing-Fw-vNet'
+  name: varFirewallVnetName
 }
 var firewallVnetLocation = existingFirewallVnet.location
 

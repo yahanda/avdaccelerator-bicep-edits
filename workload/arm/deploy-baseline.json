@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "7575618108726881178"
+      "templateHash": "2001729057696308403"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -8110,7 +8110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.24.24.22086",
-              "templateHash": "16830943410604245299"
+              "templateHash": "6237281002861192349"
             }
           },
           "parameters": {
@@ -13999,7 +13999,7 @@
                     "value": "[parameters('firewallPolicyName')]"
                   },
                   "location": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', variables('varFirewallSubId')), format('{0}', variables('varFirewallSubRgName'))), 'Microsoft.Network/virtualNetworks', 'Existing-Fw-vNet'), '2020-06-01', 'full').location]"
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', variables('varFirewallSubId')), format('{0}', variables('varFirewallSubRgName'))), 'Microsoft.Network/virtualNetworks', variables('varFirewallVnetName')), '2020-06-01', 'full').location]"
                   },
                   "enableProxy": {
                     "value": true
@@ -15630,7 +15630,7 @@
                     "value": "[parameters('firewallName')]"
                   },
                   "location": {
-                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', variables('varFirewallSubId')), format('{0}', variables('varFirewallSubRgName'))), 'Microsoft.Network/virtualNetworks', 'Existing-Fw-vNet'), '2020-06-01', 'full').location]"
+                    "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', variables('varFirewallSubId')), format('{0}', variables('varFirewallSubRgName'))), 'Microsoft.Network/virtualNetworks', variables('varFirewallVnetName')), '2020-06-01', 'full').location]"
                   },
                   "vNetId": {
                     "value": "[parameters('firewallVnetResourceId')]"
