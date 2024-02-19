@@ -1557,7 +1557,6 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "visible": "[and(steps('network').firewallOptions.deployFirewall, not(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork), empty(steps('network').firewallOptions.firewallSubnets))]",
                                     "label": "AzureFirewallSubnet address prefix",
-                                    "defaultValue" : "[steps('network').firewallOptions.firewallSubnets.properties.addressPrefix]",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
                                     "constraints": {
@@ -2476,8 +2475,7 @@
                 "deployFirewall": "[steps('network').firewallOptions.deployFirewall]",
                 "deployFirewallInHubVirtualNetwork": "[steps('network').firewallOptions.deployFirewallInHubVirtualNetwork]",
                 "firewallVnetResourceId": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork, steps('network').firewallOptions.firewallVirtualNetwork)]",
-                "firewallSubnetAddressPrefixInHubVirtualNetwork": "[coalesce(steps('network').firewallOptions.firewallSubnetSizeInHubVirtualNetwork, steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.properties.addressPrefix)]",
-                "firewallSubnetAddressPrefix": "[coalesce(steps('network').firewallOptions.firewallSubnetSize, steps('network').firewallOptions.firewallSubnets.properties.addressPrefix)]",
+                "firewallSubnetAddressPrefix": "[if(equals(steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, true), steps('network').firewallOptions.firewallSubnetSizeInHubVirtualNetwork, steps('network').firewallOptions.firewallSubnetSize)]",
                 "avdDeploySessionHosts": "[steps('sessionHosts').deploySessionHosts]",
                 "avdStartVmOnConnect": "[if(equals(steps('managementPlane').managementPlaneHostPoolSettings.hostPoolType, 'Personal'), steps('managementPlane').managementPlaneHostPoolScaling.startVmOnConnect, false)]",
                 "avdDeployScalingPlan": "[if(equals(steps('managementPlane').managementPlaneHostPoolSettings.hostPoolType, 'Pooled'), steps('managementPlane').managementPlaneHostPoolScaling.scalingPlan, false)]",

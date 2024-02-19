@@ -168,10 +168,7 @@ param deployFirewallInHubVirtualNetwork bool = false
 @sys.description('Azure firewall virtual network. (Default: "")')
 param firewallVnetResourceId string = ''
 
-@sys.description('AzureFirewallSubnet prefixes. (Default: "")')
-param firewallSubnetAddressPrefixInHubVirtualNetwork string = ''
-
-@sys.description('AzureFirewallSubnet prefixes. (Default: "")')
+@sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
 param firewallSubnetAddressPrefix string = ''
 
 @sys.description('Deploy Fslogix setup. (Default: true)')
@@ -966,7 +963,6 @@ module networking './modules/networking/deploy.bicep' = if (createAvdVnet || cre
         firewallPolicyOptionalNetworkRuleCollectionName: varFiwewallPolicyOptionalNetworkRuleCollectionName
         firewallPolicyOptionalApplicationRuleCollectionName: varFiwewallPolicyOptionalApplicationRuleCollectionName
         firewallSubnetAddressPrefix: firewallSubnetAddressPrefix
-        firewallSubnetAddressPrefixInHubVirtualNetwork: firewallSubnetAddressPrefixInHubVirtualNetwork
     }
     dependsOn: [
         baselineNetworkResourceGroup

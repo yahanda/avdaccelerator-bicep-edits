@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "16213932253931384324"
+      "templateHash": "13417945876232594035"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -340,18 +340,11 @@
         "description": "Azure firewall virtual network. (Default: \"\")"
       }
     },
-    "firewallSubnetAddressPrefixInHubVirtualNetwork": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "AzureFirewallSubnet prefixes. (Default: \"\")"
-      }
-    },
     "firewallSubnetAddressPrefix": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "AzureFirewallSubnet prefixes. (Default: \"\")"
+        "description": "AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)"
       }
     },
     "createAvdFslogixDeployment": {
@@ -8108,9 +8101,6 @@
           },
           "firewallSubnetAddressPrefix": {
             "value": "[parameters('firewallSubnetAddressPrefix')]"
-          },
-          "firewallSubnetAddressPrefixInHubVirtualNetwork": {
-            "value": "[parameters('firewallSubnetAddressPrefixInHubVirtualNetwork')]"
           }
         },
         "template": {
@@ -8120,7 +8110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "2977269184131160668"
+              "templateHash": "4115192130459361023"
             }
           },
           "parameters": {
@@ -8303,12 +8293,6 @@
               "type": "string",
               "metadata": {
                 "description": "Firewall policy application rule collection name (optional)"
-              }
-            },
-            "firewallSubnetAddressPrefixInHubVirtualNetwork": {
-              "type": "string",
-              "metadata": {
-                "description": "Firewall subnet adderss prefix"
               }
             },
             "firewallSubnetAddressPrefix": {
@@ -15224,7 +15208,7 @@
               ]
             },
             {
-              "condition": "[parameters('deployFirewall')]",
+              "condition": "[and(parameters('deployFirewall'), not(equals(parameters('firewallSubnetAddressPrefix'), '')))]",
               "type": "Microsoft.Resources/deployments",
               "apiVersion": "2022-09-01",
               "name": "[format('Fw-Subnet-{0}', parameters('time'))]",
@@ -15236,7 +15220,9 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "addressPrefix": "[if(parameters('deployFirewallInHubVirtualNetwork'), createObject('value', parameters('firewallSubnetAddressPrefixInHubVirtualNetwork')), createObject('value', parameters('firewallSubnetAddressPrefix')))]",
+                  "addressPrefix": {
+                    "value": "[parameters('firewallSubnetAddressPrefix')]"
+                  },
                   "name": {
                     "value": "AzureFirewallSubnet"
                   },

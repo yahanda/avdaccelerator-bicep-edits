@@ -94,9 +94,6 @@ param firewallPolicyOptionalNetworkRuleCollectionName string
 param firewallPolicyOptionalApplicationRuleCollectionName string
 
 @sys.description('Firewall subnet adderss prefix')
-param firewallSubnetAddressPrefixInHubVirtualNetwork string
-
-@sys.description('Firewall subnet adderss prefix')
 param firewallSubnetAddressPrefix string
 
 @sys.description('Optional. AVD Accelerator will deploy with private endpoints by default.')
@@ -1098,11 +1095,11 @@ module firewallPolicyOptionalRuleCollectionGroup '../../../../carml/1.3.0/Micros
 }
 
 // Azure Firewall subnet
-module virtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployFirewall) {
+module virtualNetworkAzureFirewallSubnet '../../../../carml/1.3.0/Microsoft.Network/virtualNetworks/subnets/deploy.bicep' = if (deployFirewall && (firewallSubnetAddressPrefix != '')) {
     scope: resourceGroup('${varFirewallSubId}', '${varFirewallSubRgName}')
     name: 'Fw-Subnet-${time}'
     params: {
-        addressPrefix: deployFirewallInHubVirtualNetwork ? firewallSubnetAddressPrefixInHubVirtualNetwork : firewallSubnetAddressPrefix
+        addressPrefix: firewallSubnetAddressPrefix
         name: 'AzureFirewallSubnet'
         virtualNetworkName: varFirewallVnetName
     }
