@@ -1468,7 +1468,7 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "visible": "[and(steps('network').firewallOptions.deployFirewall, not(empty(steps('network').hubVirtualNetworkPeering.existingHubVirtualNetwork)), steps('network').firewallOptions.deployFirewallInHubVirtualNetwork, empty(steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork))]",
                                     "label": "AzureFirewallSubnet address prefix",
-                                    "defaultValue" : "[steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.properties.addressPrefix]",
+                                    "value" : "[steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.properties.addressPrefix]",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
                                     "constraints": {
