@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.25.53.49325",
-      "templateHash": "17995204825564777548"
+      "templateHash": "16213932253931384324"
     },
     "name": "AVD Accelerator - Baseline Deployment",
     "description": "AVD Accelerator - Deployment Baseline"
@@ -338,6 +338,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "Azure firewall virtual network. (Default: \"\")"
+      }
+    },
+    "firewallSubnetAddressPrefixInHubVirtualNetwork": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "AzureFirewallSubnet prefixes. (Default: \"\")"
       }
     },
     "firewallSubnetAddressPrefix": {
@@ -8101,6 +8108,9 @@
           },
           "firewallSubnetAddressPrefix": {
             "value": "[parameters('firewallSubnetAddressPrefix')]"
+          },
+          "firewallSubnetAddressPrefixInHubVirtualNetwork": {
+            "value": "[parameters('firewallSubnetAddressPrefixInHubVirtualNetwork')]"
           }
         },
         "template": {
@@ -8110,7 +8120,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.25.53.49325",
-              "templateHash": "12405886113516870679"
+              "templateHash": "2977269184131160668"
             }
           },
           "parameters": {
@@ -8293,6 +8303,12 @@
               "type": "string",
               "metadata": {
                 "description": "Firewall policy application rule collection name (optional)"
+              }
+            },
+            "firewallSubnetAddressPrefixInHubVirtualNetwork": {
+              "type": "string",
+              "metadata": {
+                "description": "Firewall subnet adderss prefix"
               }
             },
             "firewallSubnetAddressPrefix": {
@@ -15220,9 +15236,7 @@
                 },
                 "mode": "Incremental",
                 "parameters": {
-                  "addressPrefix": {
-                    "value": "[parameters('firewallSubnetAddressPrefix')]"
-                  },
+                  "addressPrefix": "[if(parameters('deployFirewallInHubVirtualNetwork'), createObject('value', parameters('firewallSubnetAddressPrefixInHubVirtualNetwork')), createObject('value', parameters('firewallSubnetAddressPrefix')))]",
                   "name": {
                     "value": "AzureFirewallSubnet"
                   },
