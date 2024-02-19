@@ -1468,13 +1468,31 @@
                                     "type": "Microsoft.Common.TextBox",
                                     "visible": true,
                                     "label": "AzureFirewallSubnet address prefix",
-                                    "defaultValue" : "[steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.value.properties.addressPrefix]",
+                                    "defaultValue" : "[steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.properties.addressPrefix]",
                                     "toolTip": "Virtual network subnet CIDR for Azure Firewall (AzureFirewallSubnet)",
                                     "placeholder": "Example: 10.0.2.0/24",
                                     "constraints": {
                                         "required": true,
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(1[0-9]|2[0-6]))$",
                                         "validationMessage": "Invalid CIDR range. The address prefix must be smaller than or equal to 26."
+                                    }
+                                },
+                                {
+                                    "name": "test1",
+                                    "type": "Microsoft.Common.InfoBox",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "[steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork]",
+                                        "style": "info"
+                                    }
+                                },
+                                {
+                                    "name": "test2",
+                                    "type": "Microsoft.Common.InfoBox",
+                                    "visible": true,
+                                    "options": {
+                                        "text": "[steps('network').firewallOptions.firewallSubnetsInHubVirtualNetwork.properties.addressPrefix]",
+                                        "style": "info"
                                     }
                                 },
                                 {
