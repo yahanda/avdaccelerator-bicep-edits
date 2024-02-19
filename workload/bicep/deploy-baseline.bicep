@@ -168,8 +168,8 @@ param deployFirewallInHubVirtualNetwork bool = false
 @sys.description('Azure firewall virtual network. (Default: "")')
 param firewallVnetResourceId string = ''
 
-@sys.description('AzureFirewallSubnet prefixes. (Default: 10.0.2.0/24)')
-param firewallSubnetAddressPrefix string = '10.0.2.0/24'
+@sys.description('AzureFirewallSubnet prefixes. (Default: "")')
+param firewallSubnetAddressPrefix string = ''
 
 @sys.description('Deploy Fslogix setup. (Default: true)')
 param createAvdFslogixDeployment bool = true
