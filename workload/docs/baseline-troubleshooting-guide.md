@@ -10,7 +10,7 @@ Follow the steps below to troubleshoot and resolve the issue:
 
 ### Validate environment and account configuration
 
-- **Check Configuration**: Review your Azure Virtual Desktop (AVD) virtual network configuration and ensure that DNS is properly configured and the virtual network is peered to the network Hub or Identity Services virtual network. When using AD DS or AAD DS commonly the virtual network will need to be setup with custom DNS servers settings that point to the domain controllers IPs.
+- **Check Configuration**: Review your Azure Virtual Desktop (AVD) virtual network configuration and ensure that DNS is properly configured and the virtual network is peered to the network Hub or Identity Services virtual network. When using AD DS or Microsoft Entra Domain Services commonly the virtual network will need to be setup with custom DNS servers settings that point to the domain controllers IPs.
     - Resources:
         - [Name resolution for resources in Azure virtual networks](https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances?tabs=redhat)
 
@@ -49,18 +49,19 @@ For further domain join troubleshooting, refer to [Active Directory domain join 
 After successful deployment and enabling FSLogix, if users' containers are not being created or mounted, follow these steps for troubleshooting:
 
 ### Validate configuration
-- **Validate storage account configuration**: Review the storage account file share domain join status. If it appears as "Not Configured". If "Not Configured" first ensure domain join on the management virtual machine was successful as this is evidence that the domain join did not fail for usual reasons. 
+- **Validate storage account configuration**: Review the storage account file share domain join status. If it appears as "Not Configured". If "Not Configured" first ensure domain join on the management virtual machine was successful as this is evidence that the domain join did not fail for usual reasons.
+- **Validate FSLogix domain join deployment**: FSLogix settings on the storage account are delivered by an Azure deployment on the service objects resource group (rg-avd-<DeploymentPrefix>-<Environment>-<Region>-service-objects) with name Add-fslogix-Storage-Setup-<TimeStamp> and a DSC PowerShell script that the deployment runs in the management VM using an extension. To Troubleshoot this items follow:
+    - Deployment: make sure the deployment was successful and that the management VM has an extension named AzureFilesDomainJoin, if the deployment faile or the extension is not present a redeployment will be needed.
+    - DSC script: a failure of this script is the most common reson for FSLogix setup issues. To check if the script ran properly or get additional insights analyze the log file at C:\Windows\temp\ManualDscStorageScriptsLog.log
 - **If using private endpoints**: Ensure you are able to resolve to the created file share in the storage account from the management virtual machine. If unable to resolve, ensure DNS is correctly set up, including:
-
     - Verify that Private DNS Zones are correctly configured to the Identity Services virtual network.
     - If using custom DNS, conditional forwarders should be configured. Verify this is correctly configured.
-    - 
 
 Other known issues:
 
 ## Storage account domain join
 
-When attempting to join an [Azure Storage account to a domain](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-enable), whether it's Azure AD DS or an on-premises Active Directory, several common issues can arise. Here are some of the most common problems:
+When attempting to join an [Azure Storage account to a domain](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-enable), whether it's Microsoft Entra Domain Services or an on-premises Active Directory, several common issues can arise. Here are some of the most common problems:
 
 | Issue  |  Description |
 | ------------ | ------------ |

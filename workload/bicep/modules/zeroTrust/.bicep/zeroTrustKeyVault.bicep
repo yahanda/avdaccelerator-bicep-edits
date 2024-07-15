@@ -37,8 +37,8 @@ param diskEncryptionKeyExpirationInEpoch int
 @sys.description('Encryption set name')
 param diskEncryptionSetName string
 
-@sys.description('Zero trust managed identity')
-param ztManagedIdentityResourceId string
+//@sys.description('Zero trust managed identity')
+//param ztManagedIdentityResourceId string
 
 @sys.description('Tags to be applied to resources')
 param tags object
@@ -46,6 +46,11 @@ param tags object
 @sys.description('Do not modify, used to set unique value for resource deployment.')
 param time string = utcNow()
 
+@description('Specifies the SKU for the vault.')
+param vaultSku string
+
+@sys.description('Enable purge protection on the key vault')
+param enableKvPurgeProtection bool = true
 // =========== //
 // Variable declaration //
 // =========== //
@@ -55,15 +60,16 @@ param time string = utcNow()
 // =========== //
 
 // Key vault for Zero Trust.
-module ztKeyVault '../../../../../carml/1.3.0/Microsoft.KeyVault/vaults/deploy.bicep' = {
+module ztKeyVault '../../../../../avm/1.0.0/res/key-vault/vault/main.bicep' = {
     scope: resourceGroup('${subscriptionId}', '${rgName}')
     name: 'ZT-KeyVault-${time}'
     params: {
         name: kvName
         location: location
         enableRbacAuthorization: true
-        enablePurgeProtection: true
+        enablePurgeProtection: enableKvPurgeProtection
         softDeleteRetentionInDays: 7
+        sku: vaultSku
         publicNetworkAccess: 'Disabled'
         networkAcls: {
             bypass: 'AzureServices'
@@ -90,7 +96,7 @@ module ztKeyVault '../../../../../carml/1.3.0/Microsoft.KeyVault/vaults/deploy.b
 }
 
 // Disk Encryption Key for Zero Trust.
-module ztKeyVaultKey '../../../../../carml/1.3.0/Microsoft.KeyVault/vaults/keys/deploy.bicep' = {
+module ztKeyVaultKey '../../../../../avm/1.0.0/res/key-vault/vault/key/main.bicep' = {
     scope: resourceGroup('${subscriptionId}', '${rgName}')
     name: 'ZT-KeyVaultKey-${time}'
     params: {
@@ -128,21 +134,19 @@ module ztKeyVaultKey '../../../../../carml/1.3.0/Microsoft.KeyVault/vaults/keys/
 }
 
 // Disk Encryption Set for Zero Trust.
-module ztDiskEncryptionSet '../../../../../carml/1.3.0/Microsoft.Compute/diskEncryptionSets/deploy.bicep' = {
+module ztDiskEncryptionSet '../../../../../avm/1.0.0/res/compute/disk-encryption-set/main.bicep' = {
     scope: resourceGroup('${subscriptionId}', '${rgName}')
     name: 'ZT-DiskEncryptionSet-${time}'
     params: {
-        accessPolicy: false
         keyName: ztKeyVaultKey.outputs.name
         keyVaultResourceId: ztKeyVault.outputs.resourceId
         location: location
         name: diskEncryptionSetName
         rotationToLatestKeyVersionEnabled: true
-        systemAssignedIdentity: false
-        tags: tags
-        userAssignedIdentities: {
-            '${ztManagedIdentityResourceId}': {}
+        managedIdentities: {
+            systemAssigned: true
         }
+        tags: tags
     }
 }
 
@@ -151,3 +155,4 @@ module ztDiskEncryptionSet '../../../../../carml/1.3.0/Microsoft.Compute/diskEnc
 // =========== //
 
 output ztDiskEncryptionSetResourceId string = ztDiskEncryptionSet.outputs.resourceId
+output ztDiskEncryptionSetPrincipalId string = ztDiskEncryptionSet.outputs.systemAssignedMIPrincipalId

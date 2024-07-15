@@ -103,37 +103,37 @@ resource avdWrklKeyVaultget 'Microsoft.KeyVault/vaults@2021-06-01-preview' exist
 }
 
 // Provision temporary VM and add it to domain.
-module managementVm '../../../../../carml/1.3.0/Microsoft.Compute/virtualMachines/deploy.bicep' = {
+module managementVm '../../../../../avm/1.0.0/res/compute/virtual-machine/main.bicep' = {
     scope: resourceGroup('${workloadSubsId}', '${serviceObjectsRgName}')
     name: 'MGMT-VM-${time}'
     params: {
         name: managementVmName
         location: location
         timeZone: computeTimeZone
-        systemAssignedIdentity: false
-        userAssignedIdentities: {
-            '${storageManagedIdentityResourceId}': {}
+        managedIdentities: {
+            systemAssigned: false
+            userAssignedResourceIds: [
+                storageManagedIdentityResourceId
+            ] 
         }
         encryptionAtHost: encryptionAtHost
-        availabilityZone: []
+        zone: 0
         osType: 'Windows'
-        //licenseType: 'Windows_Client'
         vmSize: mgmtVmSize
         securityType: securityType
         secureBootEnabled: secureBootEnabled
         vTpmEnabled: vTpmEnabled
         imageReference: osImage
         osDisk: {
-            createOption: 'fromImage'
+            createOption: 'FromImage'
             deleteOption: 'Delete'
-            diskSizeGB: 128
             managedDisk: varManagedDisk
         }
         adminUsername: vmLocalUserName
         adminPassword: avdWrklKeyVaultget.getSecret('vmLocalUserPassword')
         nicConfigurations: [
             {
-                nicSuffix: 'nic-01-'
+                name: 'nic-01-${managementVmName}'
                 deleteOption: 'Delete'
                 enableAcceleratedNetworking: enableAcceleratedNetworking
                 ipConfigurations: !empty(applicationSecurityGroupResourceId)  ? [
@@ -158,7 +158,7 @@ module managementVm '../../../../../carml/1.3.0/Microsoft.Compute/virtualMachine
         allowExtensionOperations: true
         extensionDomainJoinPassword: avdWrklKeyVaultget.getSecret('domainJoinUserPassword')
         extensionDomainJoinConfig: {
-            enabled: (identityServiceProvider == 'AAD') ? false: true
+            enabled: (identityServiceProvider == 'EntraID') ? false: true
             settings: {
                 name: identityDomainName
                 ouPath: !empty(ouPath) ? ouPath : null
@@ -167,9 +167,9 @@ module managementVm '../../../../../carml/1.3.0/Microsoft.Compute/virtualMachine
                 options: '3'
             }
         }
-        // Azure AD (AAD) Join.
+        // Entra ID Join.
         extensionAadJoinConfig: {
-            enabled: (identityServiceProvider == 'AAD') ? true: false
+            enabled: (identityServiceProvider == 'EntraID') ? true: false
         }
         tags: tags
     }
